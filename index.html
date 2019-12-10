@@ -78,6 +78,30 @@
   <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js"
     crossorigin="anonymous"></script>
 
+  <script>
+
+    function createWallet(name) {
+      appid = 1;
+      appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
+      host = "https://apitest.moveonLibra.com";
+      url = "/v1/wallets";
+      jQuery.post({
+        url: host + url,
+        headers: { "Authorization": appkey },
+        data: { "name": name }
+      })
+        .done(function (data) {
+          console.log(data);
+        })
+        .fail(function () {
+          alert("error");
+        })
+    }
+    $(document).ready(function () {
+      console.log("document ready.")
+      createWallet("wallet-demo-js");
+    });
+  </script>
 </body>
 
 </html>
