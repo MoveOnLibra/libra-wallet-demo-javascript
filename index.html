@@ -79,19 +79,35 @@
     crossorigin="anonymous"></script>
 
   <script>
+    appid = 1;
+    appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
+    host = "https://apitest.moveonLibra.com";
+    var wallet, account;
 
     function createWallet(name) {
-      appid = 1;
-      appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
-      host = "https://apitest.moveonLibra.com";
-      url = "/v1/wallets";
+      var url = "/v1/wallets";
       jQuery.post({
         url: host + url,
         headers: { "Authorization": appkey },
         data: { "name": name }
       })
         .done(function (data) {
-          console.log(data);
+          wallet = data;
+          createAccount();
+        })
+        .fail(function () {
+          alert("error");
+        })
+    }
+    function createAccount() {
+      var url = "/v1/wallets/"+wallet.wallet_id+"/accounts";
+      jQuery.post({
+        url: host + url,
+        headers: { "Authorization": appkey },
+        data: {}
+      })
+        .done(function (data) {
+          account = data;
         })
         .fail(function () {
           alert("error");
