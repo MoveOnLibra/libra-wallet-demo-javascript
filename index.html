@@ -84,34 +84,39 @@
     host = "https://apitest.moveonLibra.com";
     var wallet, account;
 
-    function createWallet(name) {
-      var url = "/v1/wallets";
+    function call_api(url, data, callback){
       jQuery.post({
         url: host + url,
         headers: { "Authorization": appkey },
-        data: { "name": name }
+        data: data
       })
         .done(function (data) {
-          wallet = data;
-          createAccount();
+          callback(data)
         })
         .fail(function () {
           alert("error");
         })
     }
-    function createAccount() {
-      var url = "/v1/wallets/"+wallet.wallet_id+"/accounts";
-      jQuery.post({
-        url: host + url,
-        headers: { "Authorization": appkey },
-        data: {}
-      })
-        .done(function (data) {
-          account = data;
-        })
-        .fail(function () {
-          alert("error");
-        })
+
+    function createWallet(name) {
+      call_api("/v1/wallets",{"name":name}, function(data){
+        wallet = data;
+        createAccount();
+      });
+    }
+    function createAccount(name) {
+      call_api("/v1/wallets/"+wallet.wallet_id+"/accounts",{}, function(data){
+        account = data;
+      });
+    }
+    function mintCoin(address, micro_libra) {
+      data = {
+        "number_of_micro_libra": micro_libra,
+        "receiver_account_address":address
+      }
+      call_api("/v1/transactions/mint", data, function(data){
+        mintTx = data;
+      });
     }
     $(document).ready(function () {
       console.log("document ready.")
