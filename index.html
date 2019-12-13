@@ -121,25 +121,13 @@
       }
       return await call_api("/v1/transactions/transfer", data, 'POST')
     }
-    async function check_for_transaction(tx) {
-      data = {
-        "sequence_number": tx.raw_txn.sequence_number,
-        "account_address": tx.raw_txn.sender,
-      }
-      return await call_api("/v1/transactions/acc_seq", data)
-    }
     async function transfer_demo() {
       wallet = await createWallet("wallet-demo-js")
       account = await createAccount(wallet)
-      tx = await mintCoin(account.address, 123)
-      ctx = await check_for_transaction(tx)
-      if (!ctx.success) {
-        //retry once.
-        ctx = await check_for_transaction(tx)
-      }
+      mint_tx = await mintCoin(account.address, 123)
       receiver = "0000000000000000000000000000000000000000000000000000000000000000"
-      result = await transferCoin(wallet.wallet_id, account.address, receiver, 1)
-      console.log(result)
+      transfer_tx = await transferCoin(wallet.wallet_id, account.address, receiver, 1)
+      console.log(transfer_tx)
     }
     $(document).ready(function () {
       console.log("document ready.")
