@@ -82,12 +82,13 @@
     const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
     const host = "https://apitest.moveonLibra.com";
 
-    function call_api(url, data){
+    function call_api(url, data, method="GET"){
       return new Promise(function(resolve, reject) {
-        jQuery.post({
+        jQuery.ajax({
           url: host + url,
           headers: { "Authorization": appkey },
-          data: data
+          data: data,
+          method: method
         })
         .done(function (data) {
           resolve(data)
@@ -99,37 +100,52 @@
     }
 
     async function createWallet(name) {
-      return await call_api("/v1/wallets",{"name":name});
+      return await call_api("/v1/wallets",{"name":name}, 'POST');
     }
     async function createAccount(wallet) {
-      return await call_api("/v1/wallets/"+wallet.wallet_id+"/accounts",{});
+      return await call_api("/v1/wallets/"+wallet.wallet_id+"/accounts",{}, 'POST');
     }
     async function mintCoin(address, micro_libra) {
       data = {
         "number_of_micro_libra": micro_libra,
         "receiver_account_address":address
       }
-      return await call_api("/v1/transactions/mint", data);
+      return await call_api("/v1/transactions/mint", data, 'POST');
     }
-    async function transferCoin(address, micro_libra) {
+    async function transferCoin(wallet_id, sender, receiver, micro_libra) {
       data = {
         "number_of_micro_libra": micro_libra,
-        "receiver_account_address":address,
-        "sender_account_address":account.address,
-        "wallet_id":wallet.wallet_id,
+        "receiver_account_address": receiver,
+        "sender_account_address": sender,
+        "wallet_id": wallet_id,
       }
-      return await call_api("/v1/transactions/transfer");
+      return await call_api("/v1/transactions/transfer", data, 'POST')
     }
-    async function create_wallet_account_with_coin(){
-      var wallet = await createWallet("wallet-demo-js");
-      var account = await createAccount(wallet);
-      var result = await mintCoin(account.address, 123);
-      console.log(result);
+    async function check_for_transaction(tx) {
+      data = {
+        "sequence_number": tx.raw_txn.sequence_number,
+        "account_address": tx.raw_txn.sender,
+      }
+      return await call_api("/v1/transactions/acc_seq", data)
+    }
+    async function transfer_demo() {
+      wallet = await createWallet("wallet-demo-js")
+      account = await createAccount(wallet)
+      tx = await mintCoin(account.address, 123)
+      ctx = await check_for_transaction(tx)
+      if (!ctx.success) {
+        //retry once.
+        ctx = await check_for_transaction(tx)
+      }
+      receiver = "0000000000000000000000000000000000000000000000000000000000000000"
+      result = await transferCoin(wallet.wallet_id, account.address, receiver, 1)
+      console.log(result)
     }
     $(document).ready(function () {
       console.log("document ready.")
-      create_wallet_account_with_coin();
+      transfer_demo()
     });
+    
   </script>
 </body>
 
