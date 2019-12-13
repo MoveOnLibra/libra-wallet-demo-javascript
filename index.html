@@ -79,48 +79,56 @@
     crossorigin="anonymous"></script>
 
   <script>
-    appid = 1;
-    appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
-    host = "https://apitest.moveonLibra.com";
-    var wallet, account;
+    const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
+    const host = "https://apitest.moveonLibra.com";
 
-    function call_api(url, data, callback){
-      jQuery.post({
-        url: host + url,
-        headers: { "Authorization": appkey },
-        data: data
-      })
+    function call_api(url, data){
+      return new Promise(function(resolve, reject) {
+        jQuery.post({
+          url: host + url,
+          headers: { "Authorization": appkey },
+          data: data
+        })
         .done(function (data) {
-          callback(data)
+          resolve(data)
         })
-        .fail(function () {
-          alert("error");
+        .fail(function (jqXHR, textStatus, error) {
+          reject(error)
         })
+      })
     }
 
-    function createWallet(name) {
-      call_api("/v1/wallets",{"name":name}, function(data){
-        wallet = data;
-        createAccount();
-      });
+    async function createWallet(name) {
+      return await call_api("/v1/wallets",{"name":name});
     }
-    function createAccount(name) {
-      call_api("/v1/wallets/"+wallet.wallet_id+"/accounts",{}, function(data){
-        account = data;
-      });
+    async function createAccount(wallet) {
+      return await call_api("/v1/wallets/"+wallet.wallet_id+"/accounts",{});
     }
-    function mintCoin(address, micro_libra) {
+    async function mintCoin(address, micro_libra) {
       data = {
         "number_of_micro_libra": micro_libra,
         "receiver_account_address":address
       }
-      call_api("/v1/transactions/mint", data, function(data){
-        mintTx = data;
-      });
+      return await call_api("/v1/transactions/mint", data);
+    }
+    async function transferCoin(address, micro_libra) {
+      data = {
+        "number_of_micro_libra": micro_libra,
+        "receiver_account_address":address,
+        "sender_account_address":account.address,
+        "wallet_id":wallet.wallet_id,
+      }
+      return await call_api("/v1/transactions/transfer");
+    }
+    async function create_wallet_account_with_coin(){
+      var wallet = await createWallet("wallet-demo-js");
+      var account = await createAccount(wallet);
+      var result = await mintCoin(account.address, 123);
+      console.log(result);
     }
     $(document).ready(function () {
       console.log("document ready.")
-      createWallet("wallet-demo-js");
+      create_wallet_account_with_coin();
     });
   </script>
 </body>
