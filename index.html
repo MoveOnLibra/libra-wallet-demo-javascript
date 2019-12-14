@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,132 +8,191 @@
   <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/css/bootstrap.min.css"
     crossorigin="anonymous">
 </head>
-
 <body>
   <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-    <a href="https://www.moveonLibra.com" target="_blank"><img src="https://www.moveonlibra.com/mol_60.png"
-        alt="Move On Libra" id="site-logo"></a>
-    <h3 class="my-0 mr-md-auto font-weight-bold" style="color: #4a3c94;">LIBRA Wallet Demo</h3>
+    <a href="https://www.moveonLibra.com" target="_blank">
+      <img src="https://www.moveonlibra.com/images/logo.svg" style="width:auto; height: 50px" alt="Move On Libra"
+        id="site-logo">
+    </a>
+    <h3 class="my-0 mr-md-auto font-weight-bold mx-2" style="color: #4a3c94;">LIBRA Wallet Demo</h3>
     <nav class="my-2 my-md-0 mr-md-3">
       <a class="p-2 text-dark" href="https://community.libra.org/c/testnet/9" target="_blank">About Testnet</a>
       <a class="p-2 text-dark" href="https://explorer.moveonlibra.com" target="_blank">Testnet Explorer</a>
-      <a class="p-2 text-dark" href="https://github.com/MoveOnLibra/libra-wallet-demo" target="_blank"><svg height="16"
-          class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="16" aria-hidden="true">
-          <path fill-rule="evenodd"
-            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
-          </path>
-        </svg>Source</a>
+      <a class="p-2 text-dark" href="https://github.com/MoveOnLibra/libra-wallet-demo" target="_blank">Source Code</a>
     </nav>
   </div>
 
-
   <div class="container mb-4">
     <div class="row  justify-content-md-center">
-      <div class="col-lg-10 mx-1 border box-shadow rounded" style="height: 600px">
-        <p>Variable width content</p>
+      <div class="col-lg-10 mx-1 border box-shadow rounded"
+        style="height: 600px; background-image: linear-gradient(134deg, rgb(203, 207, 233) 0%, rgb(245, 245, 247) 100%);">
+        <div class="d-flex justify-content-center my-3">
+          <h2 id="wallet_name_tag" style="color: #4a3c94;">Your Wallet</h2>
+        </div>
+        <div class="d-flex justify-content-center mb-3">
+          <h6 class="text-muted"><small id="address_tag">Account Address</small></h6>
+        </div>
+        <div class="d-flex justify-content-center align-items-center mb-3">
+          <img src="https://www.moveonlibra.com/images/libra-coin.png" width="30" alt="libra">
+          <span class="mx-1" id="balance" style="color: #4a3c94; font-size: 1.8rem;">0</span>
+        </div>
+        <div class="d-flex justify-content-center mb-10">
+          <div id="qrcode"></div>
+        </div>
+        <div class="d-flex justify-content-center my-3">
+            <span  id="wait_tx" style="visibility: hidden;">Wating for transaction ... 
+              <img src="https://www.moveonlibra.com/images/loading.gif"/></span>
+        </div>
+        <div class="d-flex justify-content-center my-2">
+          <button class="btn btn-primary mx-3" type="button" onclick="clickMint()" style="width:40%">
+            Mint 100 Libra
+          </button>
+          <button class="btn btn-primary mx-3" type="button" data-toggle="modal" data-target="#transferModal" style="width:40%">
+            Transfer
+          </button>
+        </div>
+        <div class="d-flex justify-content-center my-4">
+          <a id="explorer" href="https://explorer.moveonlibra.com/" target="_blank">show account detail in MOL blockchain explorer</a>
+        </div>
       </div>
     </div>
   </div>
 
-
-  <style>
-    footer .footer-bottom.slim {
-      padding-top: 20px;
-      position: relative;
-    }
-
-    footer .footer-bottom.slim .copyright {
-      text-align: center;
-      margin-top: 0px;
-      margin-bottom: 20px;
-    }
-
-    footer .footer-bottom .copyright {
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 24px;
-      color: #F3F8FF;
-      letter-spacing: 1.7px;
-      text-align: left;
-      margin-top: -15px;
-      margin-bottom: 50px;
-    }
-  </style>
-
-  <footer id="contact" style="background-image: linear-gradient(134deg, #516093 0%, #7A88F1 100%);">
-    <div class="footer-bottom slim">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <p class="copyright" style="color: white">2019 © Developed and hosted by <a
-                href="https://www.MoveOnLibra.com" style="color: white"><strong>Move On Libra</strong></a></p>
-          </div>
+  <div class="modal fade" id="createWalletModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createWalletModalLabel">Create New Wallet</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>This is your first time to use this libra wallet app. You need to create a wallet of yourself first:</p>
+          <input id="wallet_name" type="text" class="form-control" autofocus="true"
+            placeholder="Please input the name of wallet">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="clickCreateWallet()">Create</button>
         </div>
       </div>
     </div>
-  </footer>
+  </div>
+
+  <div class="modal fade" id="transferModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="transferModalLabel">Transfer Coin</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input id="receiver_address" type="text" class="form-control mb-3" autofocus="true"
+            placeholder="Receiver Address in hex64 format">
+          <input id="transfer_amount" type="number" class="form-control" placeholder="Number of coin">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="clickTransfer()">Transfer</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
   <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js"
     crossorigin="anonymous"></script>
-
+  <script src="https://explorer.moveonlibra.com/qrcode.js" crossorigin="anonymous"></script>
   <script>
     const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
     const host = "https://apitest.moveonLibra.com";
 
-    function call_api(url, data, method="GET"){
-      return new Promise(function(resolve, reject) {
+    function call_api(url, data, method = "GET") {
+      return new Promise(function (resolve, reject) {
         jQuery.ajax({
           url: host + url,
           headers: { "Authorization": appkey },
           data: data,
           method: method
         })
-        .done(function (data) {
-          resolve(data)
-        })
-        .fail(function (jqXHR, textStatus, error) {
-          reject(error)
-        })
+          .done(function (data) {resolve(data)})
+          .fail(function (jqXHR, textStatus, error) {reject(error)})
       })
     }
-
     async function createWallet(name) {
-      return await call_api("/v1/wallets",{"name":name}, 'POST');
+      return await call_api("/v1/wallets", { "name": name }, 'POST');
     }
     async function createAccount(wallet) {
-      return await call_api("/v1/wallets/"+wallet.wallet_id+"/accounts",{}, 'POST');
+      return await call_api("/v1/wallets/" + wallet.wallet_id + "/accounts", {}, 'POST');
     }
-    async function mintCoin(address, micro_libra) {
+    async function clickMint() {
       data = {
-        "number_of_micro_libra": micro_libra,
-        "receiver_account_address":address
+        "number_of_micro_libra": 100*1000000,
+        "receiver_account_address": account.address
       }
-      return await call_api("/v1/transactions/mint", data, 'POST');
+      $("#wait_tx").css('visibility','visible')
+      tx = await call_api("/v1/transactions/mint", data, 'POST');
+      $("#wait_tx").css('visibility','hidden')
+      if(tx.success){
+        $('#balance').html(100+$('#balance').html())
+      }else{
+        alert("Transaction Error:"+tx.transaction_info.major_status)
+      }
     }
-    async function transferCoin(wallet_id, sender, receiver, micro_libra) {
+    async function clickTransfer(receiver, micro_libra) {
+      var transfer_amount = parseInt($("#transfer_amount").val())
       data = {
-        "number_of_micro_libra": micro_libra,
-        "receiver_account_address": receiver,
-        "sender_account_address": sender,
-        "wallet_id": wallet_id,
+        "number_of_micro_libra": transfer_amount * 1000000,
+        "receiver_account_address": $("#receiver_address").val(),
+        "sender_account_address": account.address,
+        "wallet_id": wallet.wallet_id,
       }
-      return await call_api("/v1/transactions/transfer", data, 'POST')
+      $('#transferModal').modal('hide');
+      $("#wait_tx").css('visibility','visible')
+      tx = await call_api("/v1/transactions/transfer", data, 'POST')
+      $("#wait_tx").css('visibility','hidden')
+      if(tx.success){
+        $('#balance').html($('#balance').html()-transfer_amount)
+      }else{
+        alert("Transaction Error:"+tx.transaction_info.major_status)
+      }
     }
-    async function transfer_demo() {
-      wallet = await createWallet("wallet-demo-js")
+    async function refreshBalance(){
+      ret = await call_api("/v1/address/balance/"+account.address, {});
+      $('#balance').html(ret.balance/1000000)
+    }
+    async function init_wallet_and_account() {
+      if (!localStorage.getItem('wallet')) {
+        $('#createWalletModal').modal()
+      } else {
+        wallet = JSON.parse(localStorage.getItem('wallet'))
+        account = JSON.parse(localStorage.getItem('account'))
+        show_wallet()
+        refreshBalance()
+      }
+    }
+    async function clickCreateWallet() {
+      $('#createWalletModal').modal('hide');
+      var name = $("#wallet_name").val()
+      wallet = await createWallet(name)
+      localStorage.setItem('wallet', JSON.stringify(wallet))
       account = await createAccount(wallet)
-      mint_tx = await mintCoin(account.address, 123)
-      receiver = "0000000000000000000000000000000000000000000000000000000000000000"
-      transfer_tx = await transferCoin(wallet.wallet_id, account.address, receiver, 1)
-      console.log(transfer_tx)
+      localStorage.setItem('account', JSON.stringify(account))
+      show_wallet()
+    }
+    function show_wallet(){
+      $('#wallet_name_tag').html(wallet.name)
+      $('#address_tag').html(account.address)
+      var qrcode = new QRCode("qrcode", {
+        text: account.address, width: 180, height: 180,
+      });
+      var url = $('#explorer').attr("href") + "accounts/" + account.address
+      $('#explorer').attr("href", url);
     }
     $(document).ready(function () {
-      console.log("document ready.")
-      transfer_demo()
+      init_wallet_and_account();
     });
-    
   </script>
 </body>
-
 </html>
