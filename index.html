@@ -32,7 +32,7 @@
         </div>
         <div class="d-flex justify-content-center align-items-center mb-3">
           Balance:
-          <span class="mx-1" id="balance" style="color: #e99911;"></span>
+          <span class="mx-1" style="color: #e99911;"><strong id="balance"></strong></span>
         </div>
         <div class="d-flex justify-content-center mb-10">
           <div id="qrcode"></div>
@@ -115,12 +115,6 @@
           .fail(function (jqXHR, textStatus, error) {reject(error)})
       })
     }
-    async function createWallet(name) {
-      return await call_api("/v1/wallets", { "name": name }, 'POST');
-    }
-    async function createAccount(wallet) {
-      return await call_api("/v1/wallets/" + wallet.wallet_id + "/accounts", {}, 'POST');
-    }
     async function clickMint() {
       data = {
         "number_of_micro_libra": 100*1000000,
@@ -170,11 +164,15 @@
     async function clickCreateWallet() {
       $('#createWalletModal').modal('hide');
       var name = $("#wallet_name").val()
-      wallet = await createWallet(name)
+      $('#wallet_name_tag').html(name)
+      $("#wait_tx").css('visibility','visible')
+      wallet = await call_api("/v1/wallets", { "name": name }, 'POST')
       localStorage.setItem('wallet', JSON.stringify(wallet))
-      account = await createAccount(wallet)
+      account = await call_api("/v1/wallets/" + wallet.wallet_id + "/accounts", {}, 'POST')
       localStorage.setItem('account', JSON.stringify(account))
+      $("#wait_tx").css('visibility','hidden')
       show_wallet()
+      $('#balance').html(0)
     }
     function show_wallet(){
       $('#wallet_name_tag').html(wallet.name)
