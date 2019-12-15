@@ -42,11 +42,14 @@
               <img src="https://www.moveonlibra.com/images/loading.gif"/></span>
         </div>
         <div class="d-flex justify-content-center my-2">
-          <button class="btn btn-primary mx-3" type="button" onclick="clickMint()" style="width:40%">
+          <button class="btn btn-primary mx-3" type="button" onclick="clickMint()" style="width:30%">
             Mint 100 Libra
           </button>
-          <button class="btn btn-primary mx-3" type="button" data-toggle="modal" data-target="#transferModal" style="width:40%">
+          <button class="btn btn-primary mx-3" type="button" data-toggle="modal" data-target="#transferModal" style="width:30%">
             Transfer
+          </button>
+          <button class="btn btn-primary mx-3" type="button" onclick="startScan()" style="width:30%">
+            Transfer by Scan
           </button>
         </div>
         <div class="d-flex justify-content-center my-4">
@@ -97,6 +100,23 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="scanModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div id="scanQrcode" style="width:300px; height:300px;">
+            <qrcode-stream @decode="onDecode"></qrcode-stream>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
 
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
   <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
@@ -186,6 +206,38 @@
     $(document).ready(function () {
       init_wallet_and_account();
     });
+    $('#transferModal').on('shown.bs.modal', function () {
+      $('#receiver_address').trigger('focus')
+    })
+    $('#scanModal').on('hidden.bs.modal', function (e) {
+      try{
+          scan_vue.$children[0].camera = 'off'
+      }catch(e){}
+    })
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <link href="https://unpkg.com/vue-qrcode-reader@2.1.1/dist/vue-qrcode-reader.css" rel="stylesheet">
+  <script src="https://unpkg.com/vue-qrcode-reader@2.1.1/dist/vue-qrcode-reader.browser.js"></script>
+  <script>
+      function startScan() {
+        $('#scanModal').modal('show')
+        try{
+          scan_vue.$children[0].camera = 'auto'
+          return
+        }catch(e){}
+        scan_vue = new Vue({
+          el: '#scanQrcode',
+          methods: {
+            onDecode(decodedString) {
+              $('#scanModal').modal('hide')
+              if(decodedString.length == 64){
+                $("#receiver_address").val(decodedString)
+                $('#transferModal').modal()
+              }
+            }
+          }
+        });
+      }
   </script>
 </body>
 </html>

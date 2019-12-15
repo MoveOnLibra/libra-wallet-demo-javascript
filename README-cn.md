@@ -210,4 +210,5 @@ Javascript的ajax调用默认是异步的，但是钱包的业务逻辑中需要
 ```
 
 ## 7. 总结
-本文演示了如何用190行的代码实现一个Libra的钱包。
+本文演示了用很少的代码就可以实现一个Libra的钱包。源代码在[这里](https://github.com/MoveOnLibra/libra-wallet-demo-javascript/blob/master/wallet190.html)。这是一个191行的html文件，单独就可以运行。你可以下载到本地然后用chrome或者firefox打开。由于IE/Edge/Safari浏览器不支持在本地文件中访问localStorage，所以只能在网上运行。
+在线访问点击[这里](https://www.moveonlibra.com/wallet.html)。
