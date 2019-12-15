@@ -3,10 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="Libra wallet for Testnet">
   <title>Libra Testnet Wallet powered by MoveOnLibra</title>
-  <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/css/bootstrap.min.css"
-    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
   <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
@@ -33,8 +31,8 @@
           <h6 class="text-muted"><small id="address_tag">Account Address</small></h6>
         </div>
         <div class="d-flex justify-content-center align-items-center mb-3">
-          <img src="https://www.moveonlibra.com/images/libra-coin.png" width="30" alt="libra">
-          <span class="mx-1" id="balance" style="color: #4a3c94; font-size: 1.8rem;">0</span>
+          Balance:
+          <span class="mx-1" id="balance" style="color: #e99911;"></span>
         </div>
         <div class="d-flex justify-content-center mb-10">
           <div id="qrcode"></div>
@@ -52,7 +50,7 @@
           </button>
         </div>
         <div class="d-flex justify-content-center my-4">
-          <a id="explorer" href="https://explorer.moveonlibra.com/" target="_blank">show account detail in MOL blockchain explorer</a>
+          <a id="explorer" href="https://explorer.moveonlibra.com/" target="_blank">show account detail in Libra explorer</a>
         </div>
       </div>
     </div>
@@ -101,20 +99,17 @@
   </div>
 
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
-  <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js"
-    crossorigin="anonymous"></script>
+  <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script src="https://explorer.moveonlibra.com/qrcode.js" crossorigin="anonymous"></script>
   <script>
-    const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
-    const host = "https://apitest.moveonLibra.com";
-
     function call_api(url, data, method = "GET") {
+      const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
+      const host = "https://apitest.moveonLibra.com";
       return new Promise(function (resolve, reject) {
         jQuery.ajax({
           url: host + url,
           headers: { "Authorization": appkey },
-          data: data,
-          method: method
+          data: data, method: method
         })
           .done(function (data) {resolve(data)})
           .fail(function (jqXHR, textStatus, error) {reject(error)})
@@ -135,7 +130,7 @@
       tx = await call_api("/v1/transactions/mint", data, 'POST');
       $("#wait_tx").css('visibility','hidden')
       if(tx.success){
-        $('#balance').html(100+$('#balance').html())
+        $('#balance').html(100 + parseFloat($('#balance').html()))
       }else{
         alert("Transaction Error:"+tx.transaction_info.major_status)
       }
@@ -153,7 +148,7 @@
       tx = await call_api("/v1/transactions/transfer", data, 'POST')
       $("#wait_tx").css('visibility','hidden')
       if(tx.success){
-        $('#balance').html($('#balance').html()-transfer_amount)
+        $('#balance').html(parseFloat($('#balance').html())-transfer_amount)
       }else{
         alert("Transaction Error:"+tx.transaction_info.major_status)
       }
