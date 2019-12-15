@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Libra Testnet Wallet powered by MoveOnLibra</title>
   <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
+
 <body>
   <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
     <a href="https://www.moveonLibra.com" target="_blank">
@@ -16,7 +18,8 @@
     <nav class="my-2 my-md-0 mr-md-3">
       <a class="p-2 text-dark" href="https://community.libra.org/c/testnet/9" target="_blank">About Testnet</a>
       <a class="p-2 text-dark" href="https://explorer.moveonlibra.com" target="_blank">Testnet Explorer</a>
-      <a class="p-2 text-dark" href="https://github.com/MoveOnLibra/libra-wallet-demo-javascript" target="_blank">Source Code</a>
+      <a class="p-2 text-dark" href="https://github.com/MoveOnLibra/libra-wallet-demo-javascript" target="_blank">Source
+        Code</a>
     </nav>
   </div>
 
@@ -38,22 +41,29 @@
           <div id="qrcode"></div>
         </div>
         <div class="d-flex justify-content-center my-3">
-            <span  id="wait_tx" style="visibility: hidden;">Wating for transaction ... 
-              <img src="https://www.moveonlibra.com/images/loading.gif"/></span>
+          <span id="wait_tx" style="visibility: hidden;">Wating for transaction ...
+            <img src="https://www.moveonlibra.com/images/loading.gif" /></span>
         </div>
         <div class="d-flex justify-content-center my-2">
-          <button class="btn btn-primary mx-3" type="button" onclick="clickMint()" style="width:30%">
+          <button class="btn btn-primary mx-3" type="button" onclick="clickMint()" style="width:40%">
             Mint 100 Libra
           </button>
-          <button class="btn btn-primary mx-3" type="button" data-toggle="modal" data-target="#transferModal" style="width:30%">
+          <button class="btn btn-primary mx-3" type="button" data-toggle="modal" data-target="#transferModal"
+            style="width:40%">
             Transfer
           </button>
-          <button class="btn btn-primary mx-3" type="button" onclick="startScan()" style="width:30%">
-            Transfer by Scan
+        </div>
+        <div class="d-flex justify-content-center my-2">
+          <button class="btn btn-primary mx-3" type="button" onclick="exportWallet()" style="width:40%">
+            Backup Wallet
+          </button>
+          <button class="btn btn-primary mx-3" type="button" onclick="startScan()" style="width:40%">
+            Transfer by Scan Camera
           </button>
         </div>
         <div class="d-flex justify-content-center my-4">
-          <a id="explorer" href="https://explorer.moveonlibra.com/" target="_blank">Show account detail in Libra explorer</a>
+          <a id="explorer" href="https://explorer.moveonlibra.com/" target="_blank">Show account detail in Libra
+            explorer</a>
         </div>
       </div>
     </div>
@@ -116,37 +126,38 @@
     </div>
   </div>
 
-  
+
 
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
-  <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js"
+    crossorigin="anonymous"></script>
   <script src="https://explorer.moveonlibra.com/qrcode.js" crossorigin="anonymous"></script>
   <script>
+    const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
+    const host = "https://apitest.moveonLibra.com";
     function call_api(url, data, method = "GET") {
-      const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
-      const host = "https://apitest.moveonLibra.com";
       return new Promise(function (resolve, reject) {
         jQuery.ajax({
           url: host + url,
           headers: { "Authorization": appkey },
           data: data, method: method
         })
-          .done(function (data) {resolve(data)})
-          .fail(function (jqXHR, textStatus, error) {reject(error)})
+          .done(function (data) { resolve(data) })
+          .fail(function (jqXHR, textStatus, error) { reject(error) })
       })
     }
     async function clickMint() {
       data = {
-        "number_of_micro_libra": 100*1000000,
+        "number_of_micro_libra": 100 * 1000000,
         "receiver_account_address": account.address
       }
-      $("#wait_tx").css('visibility','visible')
+      $("#wait_tx").css('visibility', 'visible')
       tx = await call_api("/v1/transactions/mint", data, 'POST');
-      $("#wait_tx").css('visibility','hidden')
-      if(tx.success){
+      $("#wait_tx").css('visibility', 'hidden')
+      if (tx.success) {
         $('#balance').html(100 + parseFloat($('#balance').html()))
-      }else{
-        alert("Transaction Error:"+tx.transaction_info.major_status)
+      } else {
+        alert("Transaction Error:" + tx.transaction_info.major_status)
       }
     }
     async function clickTransfer(receiver, micro_libra) {
@@ -158,18 +169,18 @@
         "wallet_id": wallet.wallet_id,
       }
       $('#transferModal').modal('hide');
-      $("#wait_tx").css('visibility','visible')
+      $("#wait_tx").css('visibility', 'visible')
       tx = await call_api("/v1/transactions/transfer", data, 'POST')
-      $("#wait_tx").css('visibility','hidden')
-      if(tx.success){
-        $('#balance').html(parseFloat($('#balance').html())-transfer_amount)
-      }else{
-        alert("Transaction Error:"+tx.transaction_info.major_status)
+      $("#wait_tx").css('visibility', 'hidden')
+      if (tx.success) {
+        $('#balance').html(parseFloat($('#balance').html()) - transfer_amount)
+      } else {
+        alert("Transaction Error:" + tx.transaction_info.major_status)
       }
     }
-    async function refreshBalance(){
-      ret = await call_api("/v1/address/balance/"+account.address, {});
-      $('#balance').html(ret.balance/1000000)
+    async function refreshBalance() {
+      ret = await call_api("/v1/address/balance/" + account.address, {});
+      $('#balance').html(ret.balance / 1000000)
     }
     async function init_wallet_and_account() {
       if (!localStorage.getItem('wallet')) {
@@ -185,16 +196,16 @@
       $('#createWalletModal').modal('hide');
       var name = $("#wallet_name").val()
       $('#wallet_name_tag').html(name)
-      $("#wait_tx").css('visibility','visible')
+      $("#wait_tx").css('visibility', 'visible')
       wallet = await call_api("/v1/wallets", { "name": name }, 'POST')
       localStorage.setItem('wallet', JSON.stringify(wallet))
       account = await call_api("/v1/wallets/" + wallet.wallet_id + "/accounts", {}, 'POST')
       localStorage.setItem('account', JSON.stringify(account))
-      $("#wait_tx").css('visibility','hidden')
+      $("#wait_tx").css('visibility', 'hidden')
       show_wallet()
       $('#balance').html(0)
     }
-    function show_wallet(){
+    function show_wallet() {
       $('#wallet_name_tag').html(wallet.name)
       $('#address_tag').html(account.address)
       var qrcode = new QRCode("qrcode", {
@@ -210,34 +221,47 @@
       $('#receiver_address').trigger('focus')
     })
     $('#scanModal').on('hidden.bs.modal', function (e) {
-      try{
-          scan_vue.$children[0].camera = 'off'
-      }catch(e){}
+      try {
+        scan_vue.$children[0].camera = 'off'
+      } catch (e) { }
     })
   </script>
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <link href="https://unpkg.com/vue-qrcode-reader@2.1.1/dist/vue-qrcode-reader.css" rel="stylesheet">
   <script src="https://unpkg.com/vue-qrcode-reader@2.1.1/dist/vue-qrcode-reader.browser.js"></script>
   <script>
-      function startScan() {
-        $('#scanModal').modal('show')
-        try{
-          scan_vue.$children[0].camera = 'auto'
-          return
-        }catch(e){}
-        scan_vue = new Vue({
-          el: '#scanQrcode',
-          methods: {
-            onDecode(decodedString) {
-              $('#scanModal').modal('hide')
-              if(decodedString.length == 64){
-                $("#receiver_address").val(decodedString)
-                $('#transferModal').modal()
-              }
+    var scan_vue;
+    function startScan() {
+      $('#scanModal').modal('show')
+      if (typeof scan_vue !== "undefined") {
+        scan_vue.$children[0].camera = 'auto'
+        return
+      }
+      scan_vue = new Vue({
+        el: '#scanQrcode',
+        methods: {
+          onDecode(decodedString) {
+            $('#scanModal').modal('hide')
+            if (decodedString.length == 64) {
+              $("#receiver_address").val(decodedString)
+              $('#transferModal').modal()
             }
           }
-        });
-      }
+        }
+      });
+    }
+    async function exportWallet() {
+      $("#wait_tx").css('visibility', 'visible')
+      content = await call_api("/v1/wallets/backup/" + wallet.wallet_id, {})
+      $("#wait_tx").css('visibility', 'hidden')
+      var link = document.createElement('a')
+      mimeType = 'text/plain'
+      link.setAttribute('download', wallet.name + ".mnemonic")
+      link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(content))
+      link.click()
+      //window.open(host+"/v1/wallets/backup/"+wallet.wallet_id+"?appkey="+appkey)
+    }
   </script>
 </body>
+
 </html>
