@@ -50,7 +50,7 @@
         </div>
         <div class="d-flex justify-content-center my-2">
           <button class="btn btn-primary mx-2" type="button" onclick="clickMint()" style="width:45%">
-            Mint 100 Libra
+            Mint 100 M_Libra
           </button>
           <button class="btn btn-primary mx-2" type="button" data-toggle="modal" data-target="#transferModal"
             style="width:45%">
@@ -152,11 +152,11 @@
     }
     async function clickMint() {
       data = {
-        "number_of_micro_libra": 100 * 1000000,
+        "number_of_micro_libra": 100 * 1,
         "receiver_account_address": account.address
       }
       $("#wait_tx").css('visibility', 'visible')
-      tx = await call_api("/v1/transactions/mint", data, 'POST');
+      tx = await call_api("/v1/transactions/mint_mol", data, 'POST');
       $("#wait_tx").css('visibility', 'hidden')
       if (tx.success) {
         $('#balance').html(100 + parseFloat($('#balance').html()))
@@ -167,7 +167,7 @@
     async function clickTransfer(receiver, micro_libra) {
       var transfer_amount = parseInt($("#transfer_amount").val())
       data = {
-        "number_of_micro_libra": transfer_amount * 1000000,
+        "number_of_micro_libra": transfer_amount * 1,
         "receiver_account_address": $("#receiver_address").val(),
         "sender_account_address": account.address,
         "wallet_id": wallet.wallet_id,
@@ -184,7 +184,7 @@
     }
     async function refreshBalance() {
       ret = await call_api("/v1/address/balance/" + account.address, {});
-      $('#balance').html(ret.balance / 1000000)
+      $('#balance').html(ret.balance / 1)
     }
     async function init_wallet_and_account() {
       if (!localStorage.getItem('wallet')) {
