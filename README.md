@@ -1,6 +1,6 @@
 # How to Build a Libra Wallet with 190 Lines of Code
 
-[Libra](https://libra.org) is a global digital currency launched by Facebook. This article shows how to write a simple Libra web wallet with 190 lines of html+javascript code. The following image is a screenshot of the wallet's main page：
+[Libra](https://libra.org) is a global digital currency launched by Facebook. This article shows how to write a simple Libra web wallet with 190 lines of html+javascript code. The following image is the screenshot of the wallet's main page：
 ![libra wallet screenshot](docs/screenshot.png "libra wallet screenshot")
 
 The web interface of the wallet is built using the classic bootstrap+jquery technology, and the wallet-related logic is implemented by calling [MoveonLibra](https://www.moveonLibra.com)'s OpenAPI. The online access url of the wallet is [https://www.moveonlibra.com/wallet.html](https://www.moveonlibra.com/wallet.html)
@@ -161,7 +161,6 @@ This wallet is connected to Libra's `testnet` which supports mint coins. When an
       }
     }
 ```
-上面的代码比较简单, 调用"/v1/transactions/mint"接口造币, 默认数量是100个`libra`, 完成后更新账户的余额。
 The above code is relatively simple: call the "/v1/transactions/mint" API to mint coin, the default number is 100 `libra`, after the completion of mint transaction, update the account balance.
 
 ## 5. Transfer
