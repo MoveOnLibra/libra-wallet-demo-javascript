@@ -100,8 +100,8 @@
           </button>
         </div>
         <div class="modal-body">
-          <input id="receiver_address" type="text" class="form-control mb-3" autofocus="true"
-            placeholder="Receiver Address in hex64 format">
+          <textarea id="receiver_address" type="text" class="form-control" autofocus="true"
+            placeholder="Receiver Address in hex64 format"></textarea>
           <input id="transfer_amount" type="number" class="form-control" placeholder="Number of coin">
         </div>
         <div class="modal-footer">
@@ -245,6 +245,8 @@
             if (decodedString.length == 64) {
               $("#receiver_address").val(decodedString)
               $('#transferModal').modal()
+            }else{
+              alert("Not a valid address: "+decodedString);
             }
           }
         }

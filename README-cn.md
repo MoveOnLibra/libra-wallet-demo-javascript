@@ -82,6 +82,8 @@ Javascript的ajax调用默认是异步的，但是钱包的业务逻辑中需要
       })
     }
 ```
+关于async/await的技术原理，可以参考[这篇文章](https://www.freecodecamp.org/news/javascript-from-callbacks-to-async-await-1cc090ddad99/)。
+
 ### 关于API接口：文档
 完整的MoveOnLibra的接口文档在[这里](https://www.moveonlibra.com/apidoc.html)，上面用到的两个API的文档链接为：[创建钱包](https://www.moveonlibra.com/apidoc.html#operation/create_wallet)和[创建账户](https://www.moveonlibra.com/apidoc.html#operation/create_accounts)。
 
