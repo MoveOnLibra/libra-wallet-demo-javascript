@@ -1,8 +1,8 @@
 # 如何用190行代码写一个Libra钱包
-Libra是Facebook推出的一种全球数字货币。本文详解如何用190行的html+javascript代码写一个简单的Libra网页钱包。下图是该钱包的网页截图：
+[Libra](https://libra.org)是Facebook推出的一种全球数字货币。本文详解如何用190行的html+javascript代码写一个简单的Libra网页钱包。下图是该钱包的网页截图：
 ![libra wallet screenshot](docs/screenshot.png "libra wallet screenshot")
 
-该网页钱包的页面使用经典的bootstrap+jquery构建，钱包相关的逻辑通过调用MoveonLibra的OpenAPI接口实现。钱包的在线访问地址是[https://www.moveonlibra.com/wallet.html](https://www.moveonlibra.com/wallet.html)
+该网页钱包的页面使用经典的bootstrap+jquery构建，钱包相关的逻辑通过调用[MoveonLibra](https://www.moveonLibra.com)的OpenAPI接口实现。钱包的在线访问地址是[https://www.moveonlibra.com/wallet.html](https://www.moveonlibra.com/wallet.html)
 
 ## 1. 创建钱包
 每次页面加载完成，首先判断钱包是否存在。如果不存在则创建钱包，代码如下：
