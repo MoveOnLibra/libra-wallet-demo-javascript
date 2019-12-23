@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Libra Testnet Wallet powered by MoveOnLibra</title>
+  <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+    <a href="https://www.moveonLibra.com" target="_blank">
+      <img src="https://www.moveonlibra.com/images/logo.svg" style="width:auto; height: 50px" alt="Move On Libra"
+        id="site-logo">
+    </a>
+    <h3 class="my-0 mr-md-auto font-weight-bold mx-2" style="color: #4a3c94;">LIBRA Wallet Demo</h3>
+    <nav class="my-2 my-md-0 mr-md-3">
+      <a class="p-2 text-dark" href="https://community.libra.org/c/testnet/9" target="_blank">About Testnet</a>
+      <a class="p-2 text-dark" href="https://explorer.moveonlibra.com" target="_blank">Testnet Explorer</a>
+      <a class="p-2 text-dark" href="https://github.com/MoveOnLibra/libra-wallet-demo-javascript" target="_blank">Source Code</a>
+    </nav>
+  </div>
+
+  <div class="container mb-4">
+    <div class="row  justify-content-md-center">
+      <div class="col-lg-10 mx-1 border box-shadow rounded"
+        style="height: 600px; background-image: linear-gradient(134deg, rgb(203, 207, 233) 0%, rgb(245, 245, 247) 100%);">
+        <div class="d-flex justify-content-center my-3">
+          <h2 id="wallet_name_tag" style="color: #4a3c94;">Your Wallet</h2>
+        </div>
+        <div class="d-flex justify-content-center mb-3">
+          <h6 class="text-muted"><small id="address_tag">Account Address</small></h6>
+        </div>
+        <div class="d-flex justify-content-center align-items-center mb-3">
+          Balance:
+          <span class="mx-1" style="color: #e99911;"><strong id="balance"></strong></span>
+        </div>
+        <div class="d-flex justify-content-center mb-10">
+          <div id="qrcode"></div>
+        </div>
+        <div class="d-flex justify-content-center my-3">
+            <span  id="wait_tx" style="visibility: hidden;">Wating for transaction ... 
+              <img src="https://www.moveonlibra.com/images/loading.gif"/></span>
+        </div>
+        <div class="d-flex justify-content-center my-2">
+          <button class="btn btn-primary mx-3" type="button" onclick="clickMint()" style="width:40%">
+            Mint 100 Libra
+          </button>
+          <button class="btn btn-primary mx-3" type="button" data-toggle="modal" data-target="#transferModal" style="width:40%">
+            Transfer
+          </button>
+        </div>
+        <div class="d-flex justify-content-center my-4">
+          <a id="explorer" href="https://explorer.moveonlibra.com/" target="_blank">Show account detail in Libra explorer</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="createWalletModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createWalletModalLabel">Create New Wallet</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>This is your first time to use this libra wallet app. You need to create a wallet of yourself first:</p>
+          <input id="wallet_name" type="text" class="form-control" autofocus="true"
+            placeholder="Please input the name of wallet">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="clickCreateWallet()">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="transferModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="transferModalLabel">Transfer Coin</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input id="receiver_address" type="text" class="form-control mb-3" autofocus="true"
+            placeholder="Receiver Address in hex64 format">
+          <input id="transfer_amount" type="number" class="form-control" placeholder="Number of coin">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="clickTransfer()">Transfer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://explorer.moveonlibra.com/qrcode.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/libra-sdk-mol@0.1.4/dist/moveonlibra.browser.js"></script>
+  <script>
+    const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
+    const client = new LibraClient("testnet", appkey);
+    client.apiClient.config.baseURL = "http://47.254.29.109/api";
+    async function clickMint() {
+      $("#wait_tx").css('visibility','visible')
+      tx = await client.transactionAPI.mint(account.address, 100*1000000);
+      $("#wait_tx").css('visibility','hidden')
+      if(tx.success){
+        $('#balance').html(100 + parseFloat($('#balance').html()))
+      }else{
+        alert("Transaction Error:"+tx.transaction_info.major_status)
+      }
+    }
+    async function clickTransfer(receiver, micro_libra) {
+      var transfer_amount = parseInt($("#transfer_amount").val())
+      $('#transferModal').modal('hide');
+      $("#wait_tx").css('visibility','visible')
+      tx = await client.transactionAPI.p2pTransfer(wallet.wallet_id, account.address,
+                  $("#receiver_address").val(), transfer_amount * 1000000);
+      $("#wait_tx").css('visibility','hidden')
+      if(tx.success){
+        $('#balance').html(parseFloat($('#balance').html())-transfer_amount)
+      }else{
+        alert("Transaction Error:"+tx.transaction_info.major_status)
+      }
+    }
+    async function refreshBalance(){
+      ret = await client.addressAPI.getAccountBalance(account.address);
+      $('#balance').html(ret.balance/1000000)
+    }
+    async function init_wallet_and_account() {
+      if (!localStorage.getItem('wallet')) {
+        $('#createWalletModal').modal()
+      } else {
+        wallet = JSON.parse(localStorage.getItem('wallet'))
+        account = JSON.parse(localStorage.getItem('account'))
+        show_wallet()
+        refreshBalance()
+      }
+    }
+    async function clickCreateWallet() {
+      $('#createWalletModal').modal('hide');
+      var name = $("#wallet_name").val()
+      $('#wallet_name_tag').html(name)
+      $("#wait_tx").css('visibility','visible')
+      wallet = await client.walletAPI.createWallet(name)
+      localStorage.setItem('wallet', JSON.stringify(wallet))
+      account = await client.walletAPI.createWalletAccount(wallet.wallet_id)
+      localStorage.setItem('account', JSON.stringify(account))
+      $("#wait_tx").css('visibility','hidden')
+      show_wallet()
+      $('#balance').html(0)
+    }
+    function show_wallet(){
+      $('#wallet_name_tag').html(wallet.name)
+      $('#address_tag').html(account.address)
+      var qrcode = new QRCode("qrcode", {
+        text: account.address, width: 180, height: 180,
+      });
+      var url = $('#explorer').attr("href") + "accounts/" + account.address
+      $('#explorer').attr("href", url);
+    }
+    $(document).ready(function () {
+      init_wallet_and_account();
+    });
+  </script>
+</body>
+</html>
