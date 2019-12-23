@@ -136,27 +136,14 @@
   <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js"
     crossorigin="anonymous"></script>
   <script src="https://explorer.moveonlibra.com/qrcode.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/libra-sdk-mol@0.1.4/dist/moveonlibra.browser.js"></script>
   <script>
     const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
-    const host = "https://apitest.moveonLibra.com";
-    function call_api(url, data, method = "GET") {
-      return new Promise(function (resolve, reject) {
-        jQuery.ajax({
-          url: host + url,
-          headers: { "Authorization": appkey },
-          data: data, method: method
-        })
-          .done(function (data) { resolve(data) })
-          .fail(function (jqXHR, textStatus, error) { reject(error) })
-      })
-    }
+    const client = new LibraClient("testnet", appkey);
+    client.apiClient.config.baseURL = "http://47.254.29.109/api";
     async function clickMint() {
-      data = {
-        "number_of_micro_libra": 100 * 1000000,
-        "receiver_account_address": account.address
-      }
       $("#wait_tx").css('visibility', 'visible')
-      tx = await call_api("/v1/transactions/mint", data, 'POST');
+      tx = await client.transactionAPI.mint(account.address, 100*1000000);
       $("#wait_tx").css('visibility', 'hidden')
       if (tx.success) {
         $('#balance').html(100 + parseFloat($('#balance').html()))
@@ -166,15 +153,10 @@
     }
     async function clickTransfer(receiver, micro_libra) {
       var transfer_amount = parseInt($("#transfer_amount").val())
-      data = {
-        "number_of_micro_libra": transfer_amount * 1000000,
-        "receiver_account_address": $("#receiver_address").val(),
-        "sender_account_address": account.address,
-        "wallet_id": wallet.wallet_id,
-      }
       $('#transferModal').modal('hide');
       $("#wait_tx").css('visibility', 'visible')
-      tx = await call_api("/v1/transactions/transfer", data, 'POST')
+      tx = await client.transactionAPI.p2pTransfer(wallet.wallet_id, account.address,
+                  $("#receiver_address").val(), transfer_amount * 1000000);
       $("#wait_tx").css('visibility', 'hidden')
       if (tx.success) {
         $('#balance').html(parseFloat($('#balance').html()) - transfer_amount)
@@ -183,7 +165,7 @@
       }
     }
     async function refreshBalance() {
-      ret = await call_api("/v1/address/balance/" + account.address, {});
+      ret = await client.addressAPI.getAccountBalance(account.address);
       $('#balance').html(ret.balance / 1000000)
     }
     async function init_wallet_and_account() {
@@ -201,9 +183,9 @@
       var name = $("#wallet_name").val()
       $('#wallet_name_tag').html(name)
       $("#wait_tx").css('visibility', 'visible')
-      wallet = await call_api("/v1/wallets", { "name": name }, 'POST')
+      wallet = await client.walletAPI.createWallet(name)
       localStorage.setItem('wallet', JSON.stringify(wallet))
-      account = await call_api("/v1/wallets/" + wallet.wallet_id + "/accounts", {}, 'POST')
+      account = await client.walletAPI.createWalletAccount(wallet.wallet_id)
       localStorage.setItem('account', JSON.stringify(account))
       $("#wait_tx").css('visibility', 'hidden')
       show_wallet()
@@ -258,7 +240,7 @@
     }
     async function exportWallet() {
       $("#wait_tx").css('visibility', 'visible')
-      content = await call_api("/v1/wallets/backup/" + wallet.wallet_id, {})
+      content = await client.walletAPI.backupWallet(wallet.wallet_id)
       $("#wait_tx").css('visibility', 'hidden')
       var link = document.createElement('a')
       mimeType = 'text/plain'

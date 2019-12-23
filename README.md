@@ -40,9 +40,9 @@ async function clickCreateWallet() {
       var name = $("#wallet_name").val()
       $('#wallet_name_tag').html(name)
       $("#wait_tx").css('visibility','visible')
-      wallet = await call_api("/v1/wallets", { "name": name }, 'POST')
+      wallet = await client.walletAPI.createWallet(name)
       localStorage.setItem('wallet', JSON.stringify(wallet))
-      account = await call_api("/v1/wallets/" + wallet.wallet_id + "/accounts", {}, 'POST')
+      account = await client.walletAPI.createWalletAccount(wallet.wallet_id)
       localStorage.setItem('account', JSON.stringify(account))
       $("#wait_tx").css('visibility','hidden')
     }
@@ -52,9 +52,9 @@ The workflow of function `clickCreateWallet` is as follows:
 * Close the modal dialog
 * Get the wallet name entered by the user and display it on the page
 * Show a waiting icon for wallet creation
-* Call MoveOnLibra's API to create the wallet, API address is "/v1/wallets"
+* Call MoveOnLibra's wallet API ([libra-sdk-mol](https://github.com/MoveOnLibra/libra-sdk-js)) to create the wallet
 * When the wallet is created successfully, store it to the localStorage
-* Call MoveOnLibra's API to create an account, API address is "/v1/wallets/<wallet_id>/accounts"
+* Call MoveOnLibra's wallet API to create an account of the wallet
 * When the account is created successfully, store it to the localStorage
 * Cancel the display of icons in waiting
 
@@ -64,38 +64,40 @@ Each wallet has a `mnemonic` which adheres to the [`BIP39`](https://github.com/b
 
 A wallet can have multiple sub-accounts, created by deterministic key derivation, using an algorithm compaible with Libra cli, similar to but different from BIP32.
 
+## 2. Install and Using `libra-sdk-mol` Library
 
+For nodejs projects, `libra-sdk-mol` can be installed via npm:
 
-## 2. Encapsulating MoveOnLibra's Rest API with Promise
-Javascript's ajax calls are asynchronous by default, but the wallet's business logic needs to be written synchronously, so we encapsulate Jquery's ajax call and return a Promise so that we can write code in async/await style. For example:
-```javascript
-    wallet = await call_api("/v1/wallets", { "name": name }, 'POST')
-    localStorage.setItem('wallet', JSON.stringify(wallet))
-    account = await call_api("/v1/wallets/" + wallet.wallet_id + "/accounts", {}, 'POST')
+```bash
+$ npm install libra-sdk-mol
 ```
-In above code, you must wait for the wallet to be created before you can create an account under the wallet. The implementation of 'call_api' is as follows：
-```javascript
-    function call_api(url, data, method = "GET") {
-      const appkey = "...";
-      const host = "https://apitest.moveonLibra.com";
-      return new Promise(function (resolve, reject) {
-        jQuery.ajax({
-          url: host + url,
-          headers: { "Authorization": appkey },
-          data: data, method: method
-        })
-          .done(function (data) {resolve(data)})
-          .fail(function (jqXHR, textStatus, error) {reject(error)})
-      })
-    }
+
+In this project, we can import following js file in the html file:
+```html
+<script src="https://unpkg.com/libra-sdk-mol/dist/moveonlibra.browser.js"></script>
 ```
-For the technical overview of async/await, you can refer to this article [javascript-from-callbacks-to-async-await](https://www.freecodecamp.org/news/javascript-from-callbacks-to-async-await-1cc090ddad99/)。
+
+And then you can use it. Firstly, you need to instantiate a LibraClient object, providing two parameters: `network` and `appkey`. Currently, the `network` parameter has only one valid value: **testnet** which is for testing only. The offical main network released later will be `mainnet`.
+
+```javascript
+var client = new LibraClient("testnet", appkey);
+//then you can use this client to call mol api. For example:
+wallet = await client.walletAPI.createWallet(name)
+account = await client.walletAPI.createWalletAccount(wallet.wallet_id)
+```
 
 ### About API Documentation
 The complete documentation for MoveOnLibra API is available [here](https://www.moveonlibra.com/apidoc.html). For example:
 
 * `Create Wallet`, api doc is https://www.moveonlibra.com/apidoc.html#operation/create_wallet
 * `Create Account`, api doc is https://www.moveonlibra.com/apidoc.html#operation/create_accounts
+
+
+These are standard Restful APIs, and you can access them directly without using `libra-sdk-mol` library. Here are two examples, one is through jquery ajax and one is through axios to access MoveOnLibra's API:
+
+* `jquery`: [writing a wallet in 190 codes with jquery](./wallet190.html)
+* `axios`:  [writing a wallet in 190 codes with axios](./wallet190_axios.html)
+
 
 ### About API Authorization
 Access to MoveOnLibra's wallet API requires authorization. You need to [sign up](https://www.moveonlibra.com/users/sign_up) to get your appkey.
@@ -133,7 +135,7 @@ The above code is used to display the wallet name, the address of the account, a
 The `refreshBalance` function is as follows：
 ```javascript
     async function refreshBalance(){
-      ret = await call_api("/v1/address/balance/"+account.address, {});
+      ret = await client.addressAPI.getAccountBalance(account.address);
       $('#balance').html(ret.balance/1000000)
     }
 ```
@@ -147,12 +149,8 @@ This wallet is connected to Libra's `testnet` which supports mint coins. When an
 
 ```javascript
     async function clickMint() {
-      data = {
-        "number_of_micro_libra": 100*1000000,
-        "receiver_account_address": account.address
-      }
       $("#wait_tx").css('visibility','visible')
-      tx = await call_api("/v1/transactions/mint", data, 'POST');
+      tx = await client.transactionAPI.mint(account.address, 100*1000000);
       $("#wait_tx").css('visibility','hidden')
       if(tx.success){
         $('#balance').html(100 + parseFloat($('#balance').html()))
@@ -184,15 +182,10 @@ When the user clicks the "Transfer" button to confirm the transfer, execute the 
 ```javascript
     async function clickTransfer(receiver, micro_libra) {
       var transfer_amount = parseInt($("#transfer_amount").val())
-      data = {
-        "number_of_micro_libra": transfer_amount * 1000000,
-        "receiver_account_address": $("#receiver_address").val(),
-        "sender_account_address": account.address,
-        "wallet_id": wallet.wallet_id,
-      }
       $('#transferModal').modal('hide');
       $("#wait_tx").css('visibility','visible')
-      tx = await call_api("/v1/transactions/transfer", data, 'POST')
+      tx = await client.transactionAPI.p2pTransfer(wallet.wallet_id, account.address,
+                  $("#receiver_address").val(), transfer_amount * 1000000);
       $("#wait_tx").css('visibility','hidden')
       if(tx.success){
         $('#balance').html(parseFloat($('#balance').html())-transfer_amount)
@@ -230,5 +223,5 @@ Since there are already many Libra blockchain browsers that can view the account
 ## 7. Conclusion
 This article demonstrates how a Libra wallet can be implemented with very little code. 
 
-Source code is [here](https://github.com/MoveOnLibra/libra-wallet-demo-javascript/blob/master/wallet190.html).
-This is a 191-line html file that can run on its own. You can download and open it with chrome or firefox. Because IE/Edge/Safari does not support access to `localStorage` in local files, with there browsers, you should try the [online version](https://www.moveonlibra.com/wallet.html).
+Source code is [here](https://github.com/MoveOnLibra/libra-wallet-demo-javascript/blob/master/wallet170_mol.html).
+This is a 172-line html file that can run on its own. You can download and open it with chrome or firefox. Because IE/Edge/Safari does not support access to `localStorage` in local files, with there browsers, you should try the [online version](https://www.moveonlibra.com/wallet.html).

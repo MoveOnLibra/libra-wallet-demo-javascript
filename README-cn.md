@@ -1,5 +1,5 @@
 # 如何用190行代码写一个Libra钱包
-[Libra](https://libra.org)是Facebook推出的一种全球数字货币。本文详解如何用190行的html+javascript代码写一个简单的Libra网页钱包。下图是该钱包的网页截图：
+[Libra](https://libra.org)是Facebook推出的一种全球数字货币。本文详解如何用170行的html+javascript代码写一个简单的Libra网页钱包。下图是该钱包的网页截图：
 ![libra wallet screenshot](docs/screenshot.png "libra wallet screenshot")
 
 该网页钱包的页面使用经典的bootstrap+jquery构建，钱包相关的逻辑通过调用[MoveonLibra](https://www.moveonLibra.com)的OpenAPI接口实现。钱包的在线访问地址是[https://www.moveonlibra.com/wallet.html](https://www.moveonlibra.com/wallet.html)
@@ -39,9 +39,10 @@ async function clickCreateWallet() {
       var name = $("#wallet_name").val()
       $('#wallet_name_tag').html(name)
       $("#wait_tx").css('visibility','visible')
-      wallet = await call_api("/v1/wallets", { "name": name }, 'POST')
+      wallet = await client.walletAPI.createWallet(name)
       localStorage.setItem('wallet', JSON.stringify(wallet))
-      account = await call_api("/v1/wallets/" + wallet.wallet_id + "/accounts", {}, 'POST')
+      account = await client.walletAPI.createWalletAccount(wallet.wallet_id)
+      localStorage.setItem('account', JSON.stringify(account))
       localStorage.setItem('account', JSON.stringify(account))
       $("#wait_tx").css('visibility','hidden')
     }
@@ -51,41 +52,43 @@ async function clickCreateWallet() {
 * 先关闭创建钱包的模态对话框
 * 获得用户输入的钱包名字，并在页面上显示
 * 显示一个等待中的图标，等待钱包创建完成
-* 调用MoveOnLibra的API创建钱包，接口地址"/v1/wallets"
+* 调用MoveOnLibra的walletAPI创建钱包
 * 当钱包创建成功，存储到本地的localStorage
-* 调用MoveOnLibra的API创建账户，接口地址"/v1/wallets/<wallet_id>/accounts"
+* 调用MoveOnLibra的walletAPI创建账户
 * 当账户创建成功，存储到本地的localStorage
 * 取消等待中的图标的显示
 
 该钱包兼容官方rust实现的钱包。一个钱包可以有多个子账户，通过确定性的key推导创建，采用官方实现的算法，类似但不同于BIP32。
 
-## 2. 用Promise封装MoveOnLibra的API接口
-Javascript的ajax调用默认是异步的，但是钱包的业务逻辑中需要以同步的方式编写，所以我们封装了Jquery的ajax调用，返回一个Promise，从而可以用async/await的方式编写代码。比如创建钱包的代码：
-```javascript
-    wallet = await call_api("/v1/wallets", { "name": name }, 'POST')
-    localStorage.setItem('wallet', JSON.stringify(wallet))
-    account = await call_api("/v1/wallets/" + wallet.wallet_id + "/accounts", {}, 'POST')
+## 2. 通过libra-sdk-mol库使用MoveOnLibra的OpenAPI接口
+## 安装和使用libra-sdk-mol库
+对于nodejs项目，可以通过npm安装:
+
+```bash
+$ npm install libra-sdk-mol
 ```
-其中，必须等待钱包创建完成，才能在该钱包下面创建账户。`call_api`的实现如下：
-```javascript
-    function call_api(url, data, method = "GET") {
-      const appkey = "...";
-      const host = "https://apitest.moveonLibra.com";
-      return new Promise(function (resolve, reject) {
-        jQuery.ajax({
-          url: host + url,
-          headers: { "Authorization": appkey },
-          data: data, method: method
-        })
-          .done(function (data) {resolve(data)})
-          .fail(function (jqXHR, textStatus, error) {reject(error)})
-      })
-    }
+
+在本项目中，直接在浏览器中引入js文件即可:
+```html
+<script src="https://unpkg.com/libra-sdk-mol/dist/moveonlibra.browser.js"></script>
 ```
-关于async/await的技术原理，可以参考[这篇文章](https://www.freecodecamp.org/news/javascript-from-callbacks-to-async-await-1cc090ddad99/)。
+
+在调用api之前，需要先实例化一个LibraClient对象，提供两个参数，一个是要访问的libra区块链网络，一个是appkey。目前可用的Libra区块链网络只有一个测试网"testnet"，主网上线后的名字将是"mainnet"。
+
+```javascript
+var client = new LibraClient("testnet", appkey);
+//then you can use this client to call mol api. For example:
+wallet = await client.walletAPI.createWallet(name)
+account = await client.walletAPI.createWalletAccount(wallet.wallet_id)
+```
 
 ### 关于API接口：文档
 完整的MoveOnLibra的接口文档在[这里](https://www.moveonlibra.com/apidoc.html)，上面用到的两个API的文档链接为：[创建钱包](https://www.moveonlibra.com/apidoc.html#operation/create_wallet)和[创建账户](https://www.moveonlibra.com/apidoc.html#operation/create_accounts)。
+
+这些都是标准的Restful API接口，你也可以不使用任何库直接访问它。这里有两个例子，一个是通过jquery ajax，一个是通过axios，来访问MoveOnLibra的接口。
+
+* `jquery`: [writing a wallet in 190 codes with jquery](./wallet190.html)
+* `axios`:  [writing a wallet in 190 codes with axios](./wallet190_axios.html)
 
 ### 关于API接口：授权
 访问MoveOnLibra的钱包接口需要授权：在http请求头上带"Authorization:appkey"。其中的appkey是需要在[这里注册](https://www.moveonlibra.com/users/sign_up)后获得。演示代码中则使用了一个预先创建的appkey，但是任何得到了该appkey的人都可以操作你的钱包，所以该代码仅仅用于演示。
@@ -114,7 +117,7 @@ Javascript的ajax调用默认是异步的，但是钱包的业务逻辑中需要
 刷新余额`refreshBalance`的代码如下：
 ```javascript
     async function refreshBalance(){
-      ret = await call_api("/v1/address/balance/"+account.address, {});
+      ret = await client.addressAPI.getAccountBalance(account.address);
       $('#balance').html(ret.balance/1000000)
     }
 ```
@@ -126,12 +129,8 @@ Javascript的ajax调用默认是异步的，但是钱包的业务逻辑中需要
 本钱包连接到Libra的测试网络，支持造币。当一个账户新建立的时候，账户里的libra余额为零。为了方便测试，我们可以通过造币功能给该账户充一些币。
 ```javascript
     async function clickMint() {
-      data = {
-        "number_of_micro_libra": 100*1000000,
-        "receiver_account_address": account.address
-      }
       $("#wait_tx").css('visibility','visible')
-      tx = await call_api("/v1/transactions/mint", data, 'POST');
+      tx = await client.transactionAPI.mint(account.address, 100*1000000);
       $("#wait_tx").css('visibility','hidden')
       if(tx.success){
         $('#balance').html(100 + parseFloat($('#balance').html()))
@@ -163,15 +162,10 @@ Javascript的ajax调用默认是异步的，但是钱包的业务逻辑中需要
 ```javascript
     async function clickTransfer(receiver, micro_libra) {
       var transfer_amount = parseInt($("#transfer_amount").val())
-      data = {
-        "number_of_micro_libra": transfer_amount * 1000000,
-        "receiver_account_address": $("#receiver_address").val(),
-        "sender_account_address": account.address,
-        "wallet_id": wallet.wallet_id,
-      }
       $('#transferModal').modal('hide');
       $("#wait_tx").css('visibility','visible')
-      tx = await call_api("/v1/transactions/transfer", data, 'POST')
+      tx = await client.transactionAPI.p2pTransfer(wallet.wallet_id, account.address,
+                  $("#receiver_address").val(), transfer_amount * 1000000);
       $("#wait_tx").css('visibility','hidden')
       if(tx.success){
         $('#balance').html(parseFloat($('#balance').html())-transfer_amount)
@@ -212,5 +206,5 @@ Javascript的ajax调用默认是异步的，但是钱包的业务逻辑中需要
 ```
 
 ## 7. 总结
-本文演示了用很少的代码就可以实现一个Libra的钱包。源代码在[这里](https://github.com/MoveOnLibra/libra-wallet-demo-javascript/blob/master/wallet190.html)。这是一个191行的html文件，单独就可以运行。你可以下载到本地然后用chrome或者firefox打开。由于IE/Edge/Safari浏览器不支持在本地文件中访问localStorage，所以只能在网上运行。
+本文演示了用很少的代码就可以实现一个Libra的钱包。源代码在[这里](https://github.com/MoveOnLibra/libra-wallet-demo-javascript/blob/master/wallet170_mol.html)。这是一个172行的html文件，单独就可以运行。你可以下载到本地然后用chrome或者firefox打开。由于IE/Edge/Safari浏览器不支持在本地文件中访问localStorage，所以只能在网上运行。
 在线访问点击[这里](https://www.moveonlibra.com/wallet.html)。

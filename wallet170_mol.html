@@ -105,7 +105,6 @@
   <script>
     const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
     const client = new LibraClient("testnet", appkey);
-    client.apiClient.config.baseURL = "http://47.254.29.109/api";
     async function clickMint() {
       $("#wait_tx").css('visibility','visible')
       tx = await client.transactionAPI.mint(account.address, 100*1000000);
