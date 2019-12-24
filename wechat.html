@@ -32,8 +32,16 @@
                 <div class="d-flex justify-content-center my-3">
                     <h2 id="wallet_name_tag" style="color: #4a3c94;">你的钱包：</h2>
                 </div>
-                <div class="d-flex justify-content-center mb-3">
-                    <h6 class="text-muted"><small id="address_tag">钱包地址</small></h6>
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <button type="button" id="clip_button" class="btn btn-lg btn-icon mb-2 px-1" data-toggle="tooltip"
+                        data-clipboard-target="#address_hidden" title="Copy Address">
+                        <g-emoji class="g-emoji" alias="clipboard"
+                            fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f4cb.png">📋
+                        </g-emoji>
+                    </button>
+                    <h6><small>钱包地址: <span class="text-muted text-break text-truncate" id="address_tag"></span></small>
+                    </h6>
+                    <span id="address_hidden" style="display:none"></span>
                 </div>
                 <div class="d-flex justify-content-center align-items-center mb-3">
                     余额:
@@ -61,7 +69,8 @@
                         style="width:45%">
                         提现Libra
                     </button>
-                    <button class="btn btn-primary mx-2" type="button" data-toggle="modal" data-target="#billModal" style="width:45%">
+                    <button class="btn btn-primary mx-2" type="button" data-toggle="modal" data-target="#billModal"
+                        style="width:45%">
                         转账给微信好友
                     </button>
                 </div>
@@ -216,7 +225,7 @@
         </form>
     </div>
 
-    
+
     <div class="modal fade" id="billModal" tabindex="-1" role="dialog">
         <form onsubmit="return false;">
             <div class="modal-dialog" role="document">
@@ -248,6 +257,7 @@
         crossorigin="anonymous"></script>
     <script src="./js/qrcode.js"></script>
     <script src="https://unpkg.com/libra-sdk-mol@0.1.4/dist/moveonlibra.browser.js"></script>
+    <script src="https://unpkg.com/clipboard@2.0.4/dist/clipboard.min.js"></script>
     <script>
         const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
         const client = new LibraClient("testnet", appkey);
@@ -323,7 +333,8 @@
         }
         function show_wallet() {
             $('#wallet_name_tag').html(wallet.name)
-            $('#address_tag').html(account.address)
+            $('#address_tag').html(account.address.slice(0, 12) + "..." + account.address.slice(52, 64))
+            $('#address_hidden').html(account.address)
             var qrcode = new QRCode("qrcode", {
                 text: account.address, width: 180, height: 180,
             });
@@ -388,6 +399,23 @@
         }
         $(document).ready(function () {
             init_wallet_and_account();
+            var clipboard = new ClipboardJS('#clip_button', {
+                text: function (trigger) {
+                    return $("#address_hidden").html();
+                }
+            });
+            function hidden_clip_hint() {
+                $('#clip_button').tooltip('dispose');
+                $('#clip_button').attr('title', "Copy Address");
+            }
+            clipboard.on('success', function (e) {
+                console.info('Action:', e.action);
+                console.info('Text:', e.text);
+                $('#clip_button').attr('title', "Copied!");
+                $('#clip_button').tooltip('show');
+                e.clearSelection();
+                setTimeout(hidden_clip_hint, 1000);
+            });
         });
     </script>
 </body>
