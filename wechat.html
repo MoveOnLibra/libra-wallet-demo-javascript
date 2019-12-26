@@ -260,56 +260,56 @@
         const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
         const client = new LibraClient("testnet", appkey);
         client.apiClient.config.baseURL = "http://47.254.29.109/api";
-
+        const Million = 1000000;
+        function get_tx_balance(tx){
+            return tx.raw_txn.payload.Script.args[1].U64 / Million;
+        }
         function getBalance() {
             return parseFloat($('#balance').html());
         }
-        async function clickBuy() {
-            var buy_amount = parseInt($("#buy_amount").val())
-            $('#buyModal').modal('hide');
-            $("#wait_tx").css('visibility', 'visible')
-            tx = await client.transactionAPI.mintMol(account, buy_amount * 1000000);
-            $("#wait_tx").css('visibility', 'hidden')
-            if (tx.success) {
-                $('#balance').html(buy_amount + getBalance())
-            } else {
-                alert("Transaction Error:" + tx.transaction_info.major_status)
-            }
+        async function refreshBalance() {
+            ret = await client.addressAPI.getAccountBalance(account);
+            $('#balance').html(ret.balance / Million)
         }
-        async function clickWithdraw() {
-            var withdraw_amount = parseInt($("#withdraw_amount").val())
-            $('#withdrawModal').modal('hide');
-            $("#wait_tx").css('visibility', 'visible')
-            tx = await client.transactionAPI.p2pTransfer(wallet, account,
-                "35f08f2a0ba3e50919a6b638eef9115a414c5e5700016ea4bee91a162a7b8525", withdraw_amount * 1000000);
-            $("#wait_tx").css('visibility', 'hidden')
-            if (tx.success) {
-                $('#balance').html(getBalance() - withdraw_amount)
-            } else {
-                alert("Transaction Error:" + tx.transaction_info.major_status)
-            }
-        }
-        async function clickTransfer(receiver, micro_libra) {
-            var transfer_amount = parseInt($("#transfer_amount").val())
-            $('#transferModal').modal('hide');
+        async function exec_transaction(tx_func){
             $("#wait_tx").css('visibility', 'visible')
             try {
-                tx = await client.transactionAPI.p2pTransfer(wallet, account,
-                    $("#receiver_address").val(), transfer_amount * 1000000);
+                tx = await tx_func();
                 if (tx.success) {
-                    $('#balance').html(getBalance() - transfer_amount)
+                    $('#balance').html(getBalance() - get_tx_balance(tx))
                 } else {
                     alert("Transaction Error:" + tx.transaction_info.major_status)
                 }
             } catch (error) {
+                console.log(error);
                 alert(client.parseError(error));
             }finally{
                 $("#wait_tx").css('visibility', 'hidden')
             }
         }
-        async function refreshBalance() {
-            ret = await client.addressAPI.getAccountBalance(account);
-            $('#balance').html(ret.balance / 1000000)
+        async function clickBuy() {
+            var buy_amount = parseInt($("#buy_amount").val())
+            $('#buyModal').modal('hide');
+            await exec_transaction(async () => {
+                console.log("buy_amount:"+buy_amount);
+                return await client.transactionAPI.mintMol(account.address, buy_amount * Million);
+            });
+        }
+        async function clickWithdraw() {
+            var withdraw_amount = parseInt($("#withdraw_amount").val())
+            $('#withdrawModal').modal('hide');
+            await exec_transaction(async () => {
+                return await client.transactionAPI.p2pTransfer(wallet, account.address,
+                "35f08f2a0ba3e50919a6b638eef9115a414c5e5700016ea4bee91a162a7b8525", withdraw_amount * Million);
+            });
+        }
+        async function clickTransfer(receiver, micro_libra) {
+            var transfer_amount = parseInt($("#transfer_amount").val())
+            $('#transferModal').modal('hide');
+            await exec_transaction(async () => {
+                return await client.transactionAPI.p2pTransfer(wallet, account.address,
+                    $("#receiver_address").val(), transfer_amount * Million);
+            });
         }
         async function init_wallet_and_account() {
             if (!localStorage.getItem('wallet')) {
