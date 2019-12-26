@@ -12,7 +12,7 @@
     <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
         <div class="d-inline-flex flex-grow-1 align-items-center">
             <a href="https://www.moveonLibra.com" target="_blank">
-                <img src="./images/logo.png" style="width:auto; height: 50px" alt="Move On Libra" id="site-logo">
+                <img src="https://www.moveonLibra.com/images/logo.svg" style="width:auto; height: 50px" alt="Move On Libra" id="site-logo">
             </a>
             <span class="text-nowrap">
                 <h3 class="my-0 mr-md-auto font-weight-bold mx-2" style="color: #4a3c94;">LIBRA钱包</h3>
@@ -55,21 +55,21 @@
                         <img src="https://www.moveonlibra.com/images/loading.gif" /></span>
                 </div>
                 <div class="d-flex justify-content-center my-2">
-                    <button class="btn btn-primary mx-2" type="button" data-toggle="modal" data-target="#buyModal"
+                    <button class="btn btn-primary mx-2" type="button" onclick="openModal('#buyModal')"
                         style="width:45%">
                         购买Libra
                     </button>
-                    <button class="btn btn-primary mx-2" type="button" data-toggle="modal" data-target="#transferModal"
+                    <button class="btn btn-primary mx-2" type="button" onclick="openModal('#transferModal')"
                         style="width:45%">
                         转账
                     </button>
                 </div>
                 <div class="d-flex justify-content-center my-2">
-                    <button class="btn btn-primary mx-2" type="button" data-toggle="modal" data-target="#withdrawModal"
+                    <button class="btn btn-primary mx-2" type="button" onclick="openModal('#withdrawModal')"
                         style="width:45%">
                         提现Libra
                     </button>
-                    <button class="btn btn-primary mx-2" type="button" data-toggle="modal" data-target="#billModal"
+                    <button class="btn btn-primary mx-2" type="button" onclick="openModal('#billModal')"
                         style="width:45%">
                         转账给微信好友
                     </button>
@@ -262,7 +262,12 @@
         client.apiClient.config.baseURL = "http://47.254.29.109/api";
         const Million = 1000000;
         function get_tx_balance(tx){
-            return tx.raw_txn.payload.Script.args[1].U64 / Million;
+            var amount = tx.raw_txn.payload.Script.args[1].U64 / Million;
+            if(tx.raw_txn.sender === account.address){
+                return -amount
+            }else{
+                return amount
+            }
         }
         function getBalance() {
             return parseFloat($('#balance').html());
@@ -271,12 +276,19 @@
             ret = await client.addressAPI.getAccountBalance(account);
             $('#balance').html(ret.balance / Million)
         }
+        function openModal(name){
+            if (typeof wallet === "undefined") {
+                $('#createWalletModal').modal()
+            } else{
+                $(name).modal('show');
+            }
+        }
         async function exec_transaction(tx_func){
             $("#wait_tx").css('visibility', 'visible')
             try {
                 tx = await tx_func();
                 if (tx.success) {
-                    $('#balance').html(getBalance() - get_tx_balance(tx))
+                    $('#balance').html(getBalance() + get_tx_balance(tx))
                 } else {
                     alert("Transaction Error:" + tx.transaction_info.major_status)
                 }
@@ -312,9 +324,9 @@
             });
         }
         async function init_wallet_and_account() {
-            if (!localStorage.getItem('wallet')) {
-                $('#createWalletModal').modal()
-            } else {
+                if (!localStorage.getItem('wallet')) {
+                    $('#createWalletModal').modal()
+                } else {
                 wallet = JSON.parse(localStorage.getItem('wallet'))
                 account = JSON.parse(localStorage.getItem('account'))
                 show_wallet()
@@ -358,6 +370,10 @@
             $("#withdraw_amount").attr("max", getBalance());
         })
         async function exportWallet() {
+            if (typeof wallet === "undefined") {
+                $('#createWalletModal').modal()
+                return;
+            }
             $("#wait_tx").css('visibility', 'visible')
             content = await client.walletAPI.backupWallet(wallet)
             $("#wait_tx").css('visibility', 'hidden')
