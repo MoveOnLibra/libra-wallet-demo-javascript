@@ -138,15 +138,15 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group row align-items-center">
-                            <label for="buy_amount" class="col-sm-5 col-form-label">请输入购买Libra数量：</label>
-                            <div class="col-sm-7">
+                            <label for="buy_amount" class="col-sm col-form-label">请输入购买Libra数量：</label>
+                            <div class="col-sm">
                                 <input id="buy_amount" oninput="changeBuyAmount()" type="number" min="0" step="1"
                                     class="form-control" placeholder="币的数量">
                             </div>
                         </div>
                         <div class="form-group row align-items-center">
-                            <label for="currency" class="col-sm-5 col-form-label">付款币种:</label>
-                            <div class="col-sm-7">
+                            <label for="currency" class="col-sm col-form-label">付款币种:</label>
+                            <div class="col-sm">
                                 <select class="form-control" id="currency" onchange="changeCurrency()">
                                     <option>人民币</option>
                                     <option>美元</option>
@@ -154,15 +154,15 @@
                             </div>
                         </div>
                         <div class="form-group row align-items-center">
-                            <label for="exchange_rate" class="col-sm-5 col-form-label"><small>实时汇率</small></label>
-                            <div class="col-sm-7">
+                            <label for="exchange_rate" class="col-sm col-form-label"><small>实时汇率</small></label>
+                            <div class="col-sm">
                                 <small id="exchange_rate" class="form-text text-muted">1 Libra == 7元 人民币</small>
                             </div>
                         </div>
                         <hr />
                         <div class="form-group row align-items-center">
-                            <label for="pay_money" class="col-sm-5 col-form-label">需支付的金额</label>
-                            <div class="col-sm-7">
+                            <label for="pay_money" class="col-sm col-form-label">需支付的金额</label>
+                            <div class="col-sm">
                                 <strong><span class="text-warning" id="pay_money">0 元</span></strong>
                             </div>
                         </div>
@@ -189,14 +189,14 @@
                     <div class="modal-body">
                         <div class="form-group row align-items-center">
                             <label for="withdraw_amount" class="col-sm-5 col-form-label">取出Libra的数量：</label>
-                            <div class="col-sm-7">
+                            <div class="col-sm-5">
                                 <input id="withdraw_amount" oninput="changeWithdrawAmount()" type="number" min="0"
                                     step="1" class="form-control" placeholder="币的数量">
                             </div>
                         </div>
                         <div class="form-group row align-items-center">
                             <label for="currency2" class="col-sm-5 col-form-label">结汇币种:</label>
-                            <div class="col-sm-7">
+                            <div class="col-sm-5">
                                 <select class="form-control" id="currency2" onchange="changeCurrency2()">
                                     <option>人民币</option>
                                     <option>美元</option>
@@ -205,14 +205,14 @@
                         </div>
                         <div class="form-group row align-items-center">
                             <label for="exchange_rate2" class="col-sm-5 col-form-label"><small>实时汇率</small></label>
-                            <div class="col-sm-7">
+                            <div class="col-sm-5">
                                 <small id="exchange_rate2" class="form-text text-muted">1 Libra == 7元 人民币</small>
                             </div>
                         </div>
                         <hr />
                         <div class="form-group row align-items-center">
                             <label for="withdraw_money" class="col-sm-5 col-form-label">提现金额</label>
-                            <div class="col-sm-7">
+                            <div class="col-sm-5">
                                 <strong><span class="text-warning" id="withdraw_money">0 元</span></strong>
                             </div>
                         </div>
@@ -250,14 +250,12 @@
         </form>
     </div>
 
-
-
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
     <script src="./js/qrcode.js"></script>
-    <script src="https://unpkg.com/libra-sdk-mol@0.1.4/dist/moveonlibra.browser.js"></script>
-    <script src="https://unpkg.com/clipboard@2.0.4/dist/clipboard.min.js"></script>
+    <script src="https://unpkg.com/libra-sdk-mol@0.2.0/dist/moveonlibra.browser.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/clipboard@2.0.4/dist/clipboard.min.js" crossorigin="anonymous"></script>
     <script>
         const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
         const client = new LibraClient("testnet", appkey);
@@ -270,7 +268,7 @@
             var buy_amount = parseInt($("#buy_amount").val())
             $('#buyModal').modal('hide');
             $("#wait_tx").css('visibility', 'visible')
-            tx = await client.transactionAPI.mintMol(account.address, buy_amount * 1000000);
+            tx = await client.transactionAPI.mintMol(account, buy_amount * 1000000);
             $("#wait_tx").css('visibility', 'hidden')
             if (tx.success) {
                 $('#balance').html(buy_amount + getBalance())
@@ -282,7 +280,7 @@
             var withdraw_amount = parseInt($("#withdraw_amount").val())
             $('#withdrawModal').modal('hide');
             $("#wait_tx").css('visibility', 'visible')
-            tx = await client.transactionAPI.p2pTransfer(wallet.wallet_id, account.address,
+            tx = await client.transactionAPI.p2pTransfer(wallet, account,
                 "35f08f2a0ba3e50919a6b638eef9115a414c5e5700016ea4bee91a162a7b8525", withdraw_amount * 1000000);
             $("#wait_tx").css('visibility', 'hidden')
             if (tx.success) {
@@ -295,17 +293,22 @@
             var transfer_amount = parseInt($("#transfer_amount").val())
             $('#transferModal').modal('hide');
             $("#wait_tx").css('visibility', 'visible')
-            tx = await client.transactionAPI.p2pTransfer(wallet.wallet_id, account.address,
-                $("#receiver_address").val(), transfer_amount * 1000000);
-            $("#wait_tx").css('visibility', 'hidden')
-            if (tx.success) {
-                $('#balance').html(getBalance() - transfer_amount)
-            } else {
-                alert("Transaction Error:" + tx.transaction_info.major_status)
+            try {
+                tx = await client.transactionAPI.p2pTransfer(wallet, account,
+                    $("#receiver_address").val(), transfer_amount * 1000000);
+                if (tx.success) {
+                    $('#balance').html(getBalance() - transfer_amount)
+                } else {
+                    alert("Transaction Error:" + tx.transaction_info.major_status)
+                }
+            } catch (error) {
+                alert(client.parseError(error));
+            }finally{
+                $("#wait_tx").css('visibility', 'hidden')
             }
         }
         async function refreshBalance() {
-            ret = await client.addressAPI.getAccountBalance(account.address);
+            ret = await client.addressAPI.getAccountBalance(account);
             $('#balance').html(ret.balance / 1000000)
         }
         async function init_wallet_and_account() {
@@ -325,7 +328,7 @@
             $("#wait_tx").css('visibility', 'visible')
             wallet = await client.walletAPI.createWallet(name)
             localStorage.setItem('wallet', JSON.stringify(wallet))
-            account = await client.walletAPI.createWalletAccount(wallet.wallet_id)
+            account = await client.walletAPI.createWalletAccount(wallet)
             localStorage.setItem('account', JSON.stringify(account))
             $("#wait_tx").css('visibility', 'hidden')
             show_wallet()
@@ -341,6 +344,9 @@
             var url = $('#explorer').attr("href") + "accounts/" + account.address
             $('#explorer').attr("href", url);
         }
+        $('#createWalletModal').on('shown.bs.modal', function () {
+            $('#wallet_name').trigger('focus')
+        })
         $('#transferModal').on('shown.bs.modal', function () {
             $('#receiver_address').trigger('focus')
         })
@@ -353,7 +359,7 @@
         })
         async function exportWallet() {
             $("#wait_tx").css('visibility', 'visible')
-            content = await client.walletAPI.backupWallet(wallet.wallet_id)
+            content = await client.walletAPI.backupWallet(wallet)
             $("#wait_tx").css('visibility', 'hidden')
             var link = document.createElement('a')
             mimeType = 'text/plain'
