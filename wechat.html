@@ -254,7 +254,7 @@
     <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
     <script src="./js/qrcode.js"></script>
-    <script src="https://unpkg.com/libra-sdk-mol@0.2.0/dist/moveonlibra.browser.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/libra-sdk-mol@0.2.1/dist/moveonlibra.browser.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/clipboard@2.0.4/dist/clipboard.min.js" crossorigin="anonymous"></script>
     <script>
         const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
@@ -273,6 +273,7 @@
             return parseFloat($('#balance').html());
         }
         async function refreshBalance() {
+            $('#balance').html("<img src='https://www.moveonlibra.com/images/loading.gif' alt='waiting...'>")
             ret = await client.addressAPI.getAccountBalance(account);
             $('#balance').html(ret.balance / Million)
         }
