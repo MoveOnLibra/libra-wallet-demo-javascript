@@ -82,7 +82,8 @@
     </div>
 
     <div style="display: none;">
-        <div id="alert_div"><span id="alert_span" class="alert alert-warning" style="padding:0.35rem" role="alert"></span></div>
+        <div id="alert_div"><span id="alert_span" class="alert alert-warning" style="padding:0.35rem"
+                role="alert"></span></div>
         <span id="wait_tx">等待响应中 ...
             <img src="https://www.moveonlibra.com/images/loading.gif" /></span>
     </div>
@@ -302,27 +303,29 @@
         function hidden_alert() {
             $("#message_area").html("&nbsp;")
         }
-        async function exec_transaction(tx_func) {
+        async function exec_api(tx_func, is_tx = true) {
             show_wait_tx()
             try {
                 tx = await tx_func();
-                if (tx.success) {
-                    $('#balance').html(getBalance() + get_tx_balance(tx))
-                } else {
-                    alert("Transaction Error:" + tx.transaction_info.major_status)
+                if (is_tx) {
+                    if (tx.success) {
+                        $('#balance').html(getBalance() + get_tx_balance(tx))
+                    } else {
+                        alert("Transaction Error:" + tx.transaction_info.major_status)
+                    }
                 }
                 show_alert("执行成功")
                 setTimeout(hidden_alert, 2000)
             } catch (error) {
                 console.log(error);
                 show_alert("执行失败", "danger")
-                //setTimeout(hidden_alert, 3000)
+                setTimeout(hidden_alert, 3000)
             }
         }
         async function clickBuy() {
             var buy_amount = parseInt($("#buy_amount").val())
             $('#buyModal').modal('hide');
-            await exec_transaction(async () => {
+            await exec_api(async () => {
                 console.log("buy_amount:" + buy_amount);
                 return await client.transactionAPI.mintMol(account.address, buy_amount * Million);
             });
@@ -330,7 +333,7 @@
         async function clickWithdraw() {
             var withdraw_amount = parseInt($("#withdraw_amount").val())
             $('#withdrawModal').modal('hide');
-            await exec_transaction(async () => {
+            await exec_api(async () => {
                 return await client.transactionAPI.p2pTransfer(wallet, account.address,
                     "35f08f2a0ba3e50919a6b638eef9115a414c5e5700016ea4bee91a162a7b8525", withdraw_amount * Million);
             });
@@ -338,7 +341,7 @@
         async function clickTransfer(receiver, micro_libra) {
             var transfer_amount = parseInt($("#transfer_amount").val())
             $('#transferModal').modal('hide');
-            await exec_transaction(async () => {
+            await exec_api(async () => {
                 return await client.transactionAPI.p2pTransfer(wallet, account.address,
                     $("#receiver_address").val(), transfer_amount * Million);
             });
@@ -357,12 +360,12 @@
             $('#createWalletModal').modal('hide');
             var name = $("#wallet_name").val()
             $('#wallet_name_tag').html(name)
-            $("#wait_tx").css('visibility', 'visible')
-            wallet = await client.walletAPI.createWallet(name)
-            localStorage.setItem('wallet', JSON.stringify(wallet))
-            account = await client.walletAPI.createWalletAccount(wallet)
-            localStorage.setItem('account', JSON.stringify(account))
-            $("#wait_tx").css('visibility', 'hidden')
+            await exec_api(async () => {
+                wallet = await client.walletAPI.createWallet(name)
+                localStorage.setItem('wallet', JSON.stringify(wallet))
+                account = await client.walletAPI.createWalletAccount(wallet)
+                localStorage.setItem('account', JSON.stringify(account))
+            }, false);
             show_wallet()
             $('#balance').html(0)
         }
@@ -394,9 +397,9 @@
                 $('#createWalletModal').modal()
                 return;
             }
-            $("#wait_tx").css('visibility', 'visible')
-            content = await client.walletAPI.backupWallet(wallet)
-            $("#wait_tx").css('visibility', 'hidden')
+            await exec_api(async () => {
+                content = await client.walletAPI.backupWallet(wallet)
+            }, false);
             var link = document.createElement('a')
             mimeType = 'text/plain'
             link.setAttribute('download', wallet.name + ".mnemonic")
