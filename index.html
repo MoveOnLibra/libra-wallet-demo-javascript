@@ -33,10 +33,10 @@
         <div class="row  justify-content-md-center">
             <div class="col-lg-10 mx-1 border box-shadow rounded"
                 style="height: 600px; background-image: linear-gradient(134deg, rgb(203, 207, 233) 0%, rgb(245, 245, 247) 100%);">
-                <div class="d-flex justify-content-center my-3">
+                <div class="d-flex justify-content-center mt-3 mb-2">
                     <h2 id="wallet_name_tag" style="color: #4a3c94;">Your Wallet:</h2>
                 </div>
-                <div class="d-flex justify-content-center align-items-center mb-3">
+                <div class="d-flex justify-content-center align-items-center mb-0">
                     <button type="button" id="clip_button" class="btn btn-lg btn-icon mb-2 px-1" data-toggle="tooltip"
                         data-clipboard-target="#address_hidden" title="Copy Address">
                         <g-emoji class="g-emoji" alias="clipboard"
@@ -48,17 +48,17 @@
                     </h6>
                     <span id="address_hidden" style="display:none"></span>
                 </div>
-                <div class="d-flex justify-content-center align-items-center mb-3">
+                <div class="d-flex justify-content-center align-items-center mb-1">
                     Balance:
                     <span class="mx-1" style="color: #e99911;"><strong id="balance"></strong></span>
                 </div>
-                <div class="d-flex justify-content-center mb-10">
+                <div class="d-flex justify-content-center my-2">
+                    <small><span id="message_area">&nbsp;</span></small>
+                </div>
+                <div class="d-flex justify-content-center">
                     <div id="qrcode"></div>
                 </div>
-                <div class="d-flex justify-content-center my-3">
-                    <span id="message_area">&nbsp;</span>
-                </div>
-                <div class="d-flex justify-content-center my-2">
+                <div class="d-flex justify-content-center mt-4">
                     <button class="btn btn-primary mx-2" type="button" onclick="openModal('#buyModal')"
                         style="width:45%">
                         Mint Libra
@@ -88,8 +88,8 @@
     <div style="display: none;">
         <div id="alert_div"><span id="alert_span" class="alert alert-warning" style="padding:0.35rem"
                 role="alert"></span></div>
-        <span id="wait_tx">Wating for response ...
-            <img src="https://www.moveonlibra.com/images/loading.gif" /></span>
+        <span id="wait_tx"><span class="text-muted">Wating for response ...</span>
+            <img src="https://www.moveonlibra.com/images/loading.gif" height="16px"/></span>
     </div>
 
     <div class="modal fade" id="createWalletModal" tabindex="-1" role="dialog">
@@ -210,7 +210,7 @@
             }, 100)
         }
         async function refreshBalance() {
-            $('#balance').html("<img src='https://www.moveonlibra.com/images/loading.gif' alt='waiting...'>")
+            $('#balance').html("<img src='https://www.moveonlibra.com/images/loading.gif' height='16px' alt='waiting...'>")
             ret = await client.addressAPI.getAccountBalance(account);
             $('#balance').html(ret.balance / Million)
             balanceAnimation(800)
