@@ -2,254 +2,387 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Libra Testnet Wallet powered by MoveOnLibra</title>
-  <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Libra Testnet Wallet powered by MoveOnLibra</title>
+    <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 
 <body>
-  <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-    <div class="d-inline-flex flex-grow-1 align-items-center">
-      <a href="https://www.moveonLibra.com" target="_blank">
-        <img src="https://www.moveonlibra.com/images/logo.svg" style="width:auto; height: 50px" alt="Move On Libra"
-          id="site-logo">
-      </a>
-      <span class="text-nowrap">
-        <h3 class="my-0 mr-md-auto font-weight-bold mx-2" style="color: #4a3c94;">LIBRA Wallet Demo</h3>
-      </span>
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+        <div class="d-inline-flex flex-grow-1 align-items-center">
+            <a href="https://www.moveonLibra.com" target="_blank">
+                <img src="https://www.moveonlibra.com/images/logo.svg" style="width:auto; height: 50px"
+                    alt="Move On Libra" id="site-logo">
+            </a>
+            <span class="text-nowrap">
+                <h3 class="my-0 mr-md-auto font-weight-bold mx-2" style="color: #4a3c94;">LIBRA Wallet Demo</h3>
+            </span>
+        </div>
+        <nav class="my-2 my-md-0 mr-md-3">
+            <a class="p-2 text-dark" href="https://community.libra.org/c/testnet/9" target="_blank">About Testnet</a>
+            <a class="p-2 text-dark" href="https://explorer.moveonlibra.com" target="_blank">Testnet Explorer</a>
+            <a class="p-2 text-dark" href="https://github.com/MoveOnLibra/libra-wallet-demo-javascript"
+                target="_blank">Source
+                Code</a>
+        </nav>
     </div>
-    <nav class="my-2 my-md-0 mr-md-3">
-      <a class="p-2 text-dark" href="https://community.libra.org/c/testnet/9" target="_blank">About Testnet</a>
-      <a class="p-2 text-dark" href="https://explorer.moveonlibra.com" target="_blank">Testnet Explorer</a>
-      <a class="p-2 text-dark" href="https://github.com/MoveOnLibra/libra-wallet-demo-javascript" target="_blank">Source
-        Code</a>
-    </nav>
-  </div>
 
-  <div class="container mb-4">
-    <div class="row  justify-content-md-center">
-      <div class="col-lg-10 mx-1 border box-shadow rounded"
-        style="height: 600px; background-image: linear-gradient(134deg, rgb(203, 207, 233) 0%, rgb(245, 245, 247) 100%);">
-        <div class="d-flex justify-content-center my-3">
-          <h2 id="wallet_name_tag" style="color: #4a3c94;">Your Wallet</h2>
+
+    <div class="container mb-4">
+        <div class="row  justify-content-md-center">
+            <div class="col-lg-10 mx-1 border box-shadow rounded"
+                style="height: 600px; background-image: linear-gradient(134deg, rgb(203, 207, 233) 0%, rgb(245, 245, 247) 100%);">
+                <div class="d-flex justify-content-center my-3">
+                    <h2 id="wallet_name_tag" style="color: #4a3c94;">Your Wallet:</h2>
+                </div>
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <button type="button" id="clip_button" class="btn btn-lg btn-icon mb-2 px-1" data-toggle="tooltip"
+                        data-clipboard-target="#address_hidden" title="Copy Address">
+                        <g-emoji class="g-emoji" alias="clipboard"
+                            fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f4cb.png">📋
+                        </g-emoji>
+                    </button>
+                    <h6><small>ACCOUNT ADDRESS: <span class="text-muted text-break text-truncate"
+                                id="address_tag"></span></small>
+                    </h6>
+                    <span id="address_hidden" style="display:none"></span>
+                </div>
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    Balance:
+                    <span class="mx-1" style="color: #e99911;"><strong id="balance"></strong></span>
+                </div>
+                <div class="d-flex justify-content-center mb-10">
+                    <div id="qrcode"></div>
+                </div>
+                <div class="d-flex justify-content-center my-3">
+                    <span id="message_area">&nbsp;</span>
+                </div>
+                <div class="d-flex justify-content-center my-2">
+                    <button class="btn btn-primary mx-2" type="button" onclick="openModal('#buyModal')"
+                        style="width:45%">
+                        Mint Libra
+                    </button>
+                    <button class="btn btn-primary mx-2" type="button" onclick="openModal('#transferModal')"
+                        style="width:45%">
+                        Transfer
+                    </button>
+                </div>
+                <div class="d-flex justify-content-center my-2">
+                    <button class="btn btn-primary mx-2" type="button" onclick="exportWallet()" style="width:45%">
+                        Backup Wallet
+                    </button>
+                    <button class="btn btn-primary mx-2" type="button" onclick="startScan()" style="width:45%">
+                        Transfer by Scan Camera
+                    </button>
+                </div>
+                <div class="d-flex justify-content-center my-4">
+                    <a id="explorer" href="https://explorer.moveonlibra.com/" target="_blank">Show account detail in
+                        Libra
+                        explorer</a>
+                </div>
+            </div>
         </div>
-        <div class="d-flex justify-content-center mb-3">
-          <h6 class="text-muted"><small id="address_tag">Account Address</small></h6>
-        </div>
-        <div class="d-flex justify-content-center align-items-center mb-3">
-          Balance:
-          <span class="mx-1" style="color: #e99911;"><strong id="balance"></strong></span>
-        </div>
-        <div class="d-flex justify-content-center mb-10">
-          <div id="qrcode"></div>
-        </div>
-        <div class="d-flex justify-content-center my-3">
-          <span id="wait_tx" style="visibility: hidden;">Wating for transaction ...
+    </div>
+
+    <div style="display: none;">
+        <div id="alert_div"><span id="alert_span" class="alert alert-warning" style="padding:0.35rem"
+                role="alert"></span></div>
+        <span id="wait_tx">Wating for response ...
             <img src="https://www.moveonlibra.com/images/loading.gif" /></span>
-        </div>
-        <div class="d-flex justify-content-center my-2">
-          <button class="btn btn-primary mx-2" type="button" onclick="clickMint()" style="width:45%">
-            Mint 100 Libra
-          </button>
-          <button class="btn btn-primary mx-2" type="button" data-toggle="modal" data-target="#transferModal"
-            style="width:45%">
-            Transfer
-          </button>
-        </div>
-        <div class="d-flex justify-content-center my-2">
-          <button class="btn btn-primary mx-2" type="button" onclick="exportWallet()" style="width:45%">
-            Backup Wallet
-          </button>
-          <button class="btn btn-primary mx-2" type="button" onclick="startScan()" style="width:45%">
-            Transfer by Scan Camera
-          </button>
-        </div>
-        <div class="d-flex justify-content-center my-4">
-          <a id="explorer" href="https://explorer.moveonlibra.com/" target="_blank">Show account detail in Libra
-            explorer</a>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <div class="modal fade" id="createWalletModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="createWalletModalLabel">Create New Wallet</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+    <div class="modal fade" id="createWalletModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createWalletModalLabel">Create New Wallet</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>This is your first time to use this libra wallet app. You need to create a wallet of yourself
+                        first:</p>
+                    <input id="wallet_name" type="text" class="form-control" autofocus="true"
+                        placeholder="Please input the name of wallet">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="clickCreateWallet()">Create</button>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-          <p>This is your first time to use this libra wallet app. You need to create a wallet of yourself first:</p>
-          <input id="wallet_name" type="text" class="form-control" autofocus="true"
-            placeholder="Please input the name of wallet">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="clickCreateWallet()">Create</button>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <div class="modal fade" id="transferModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="transferModalLabel">Transfer Coin</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <textarea id="receiver_address" type="text" class="form-control" autofocus="true"
-            placeholder="Receiver Address in hex64 format"></textarea>
-          <input id="transfer_amount" type="number" class="form-control" placeholder="Number of coin">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="clickTransfer()">Transfer</button>
-        </div>
-      </div>
+    <div class="modal fade" id="buyModal" tabindex="-1" role="dialog">
+        <form onsubmit="clickBuy();return false;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="buyModalLabel">Mint Libra</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row align-items-center">
+                            <label for="buy_amount" class="col-sm col-form-label">The amount to mint：</label>
+                            <div class="col-sm">
+                                <input id="buy_amount" type="number" min="0" max="1000" step="1" class="form-control"
+                                    placeholder="Number of coin">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Mint</button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-  </div>
 
-  <div class="modal fade" id="scanModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-body">
-          <div id="scanQrcode" style="width:300px; height:300px;">
-            <qrcode-stream @decode="onDecode"></qrcode-stream>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        </div>
-      </div>
+    <div class="modal fade" id="transferModal" tabindex="-1" role="dialog">
+        <form onsubmit="clickTransfer();return false;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="transferModalLabel">Transfer Coin</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea id="receiver_address" type="text" class="form-control" autofocus="true"
+                            placeholder="Receiver Address in hex64 format"></textarea>
+                        <input id="transfer_amount" type="number" class="form-control" placeholder="Number of coin">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Transfer</button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-  </div>
 
 
+    <div class="modal fade" id="scanModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div id="scanQrcode" style="width:300px; height:300px;">
+                        <qrcode-stream @decode="onDecode"></qrcode-stream>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
-  <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js"
-    crossorigin="anonymous"></script>
-  <script src="https://explorer.moveonlibra.com/qrcode.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/libra-sdk-mol@0.1.4/dist/moveonlibra.browser.js"></script>
-  <script>
-    const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
-    const client = new LibraClient("testnet", appkey);
-    client.apiClient.config.baseURL = "http://47.254.29.109/api";
-    async function clickMint() {
-      $("#wait_tx").css('visibility', 'visible')
-      tx = await client.transactionAPI.mint(account.address, 100*1000000);
-      $("#wait_tx").css('visibility', 'hidden')
-      if (tx.success) {
-        $('#balance').html(100 + parseFloat($('#balance').html()))
-      } else {
-        alert("Transaction Error:" + tx.transaction_info.major_status)
-      }
-    }
-    async function clickTransfer(receiver, micro_libra) {
-      var transfer_amount = parseInt($("#transfer_amount").val())
-      $('#transferModal').modal('hide');
-      $("#wait_tx").css('visibility', 'visible')
-      tx = await client.transactionAPI.p2pTransfer(wallet.wallet_id, account.address,
-                  $("#receiver_address").val(), transfer_amount * 1000000);
-      $("#wait_tx").css('visibility', 'hidden')
-      if (tx.success) {
-        $('#balance').html(parseFloat($('#balance').html()) - transfer_amount)
-      } else {
-        alert("Transaction Error:" + tx.transaction_info.major_status)
-      }
-    }
-    async function refreshBalance() {
-      ret = await client.addressAPI.getAccountBalance(account.address);
-      $('#balance').html(ret.balance / 1000000)
-    }
-    async function init_wallet_and_account() {
-      if (!localStorage.getItem('wallet')) {
-        $('#createWalletModal').modal()
-      } else {
-        wallet = JSON.parse(localStorage.getItem('wallet'))
-        account = JSON.parse(localStorage.getItem('account'))
-        show_wallet()
-        refreshBalance()
-      }
-    }
-    async function clickCreateWallet() {
-      $('#createWalletModal').modal('hide');
-      var name = $("#wallet_name").val()
-      $('#wallet_name_tag').html(name)
-      $("#wait_tx").css('visibility', 'visible')
-      wallet = await client.walletAPI.createWallet(name)
-      localStorage.setItem('wallet', JSON.stringify(wallet))
-      account = await client.walletAPI.createWalletAccount(wallet.wallet_id)
-      localStorage.setItem('account', JSON.stringify(account))
-      $("#wait_tx").css('visibility', 'hidden')
-      show_wallet()
-      $('#balance').html(0)
-    }
-    function show_wallet() {
-      $('#wallet_name_tag').html(wallet.name)
-      $('#address_tag').html(account.address)
-      var qrcode = new QRCode("qrcode", {
-        text: account.address, width: 180, height: 180,
-      });
-      var url = $('#explorer').attr("href") + "accounts/" + account.address
-      $('#explorer').attr("href", url);
-    }
-    $(document).ready(function () {
-      init_wallet_and_account();
-    });
-    $('#transferModal').on('shown.bs.modal', function () {
-      $('#receiver_address').trigger('focus')
-    })
-    $('#scanModal').on('hidden.bs.modal', function (e) {
-      try {
-        scan_vue.$children[0].camera = 'off'
-      } catch (e) { }
-    })
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-  <link href="https://unpkg.com/vue-qrcode-reader@2.1.1/dist/vue-qrcode-reader.css" rel="stylesheet">
-  <script src="https://unpkg.com/vue-qrcode-reader@2.1.1/dist/vue-qrcode-reader.browser.js"></script>
-  <script>
-    var scan_vue;
-    function startScan() {
-      $('#scanModal').modal('show')
-      if (typeof scan_vue !== "undefined") {
-        scan_vue.$children[0].camera = 'auto'
-        return
-      }
-      scan_vue = new Vue({
-        el: '#scanQrcode',
-        methods: {
-          onDecode(decodedString) {
-            $('#scanModal').modal('hide')
-            if (decodedString.length == 64) {
-              $("#receiver_address").val(decodedString)
-              $('#transferModal').modal()
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="https://explorer.moveonlibra.com/qrcode.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/libra-sdk-mol@0.2.1/dist/moveonlibra.browser.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/clipboard@2.0.4/dist/clipboard.min.js" crossorigin="anonymous"></script>
+    <script>
+        const appkey = "eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoidHgxeHl4MXh1IiwiaWF0IjoxNTcyOTI0NzQxLCJleHAiOjE2MDQ0NjA3NDF9.2yh_gbH266nWHQ9E_fghs7vVoFHT7a1Z6Zi-NEYt7VTmzK8GPG7BzrBkJ3HATCoVFawss_tLMqqHRUtsGVkJSQ";
+        const client = new LibraClient("testnet", appkey);
+        const Million = 1000000;
+        function get_tx_balance(tx) {
+            var amount = tx.raw_txn.payload.Script.args[1].U64 / Million;
+            if (tx.raw_txn.sender === account.address) {
+                return -amount
             } else {
-              alert("Not a valid address: " + decodedString);
+                return amount
             }
-          }
         }
-      });
-    }
-    async function exportWallet() {
-      $("#wait_tx").css('visibility', 'visible')
-      content = await client.walletAPI.backupWallet(wallet.wallet_id)
-      $("#wait_tx").css('visibility', 'hidden')
-      var link = document.createElement('a')
-      mimeType = 'text/plain'
-      link.setAttribute('download', wallet.name + ".mnemonic")
-      link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(content))
-      link.click()
-      //window.open(host+"/v1/wallets/backup/"+wallet.wallet_id+"?appkey="+appkey)
-    }
-  </script>
+        function getBalance() {
+            return parseFloat($('#balance').html());
+        }
+        function balanceAnimation(time = 1500) {
+            $('#balance').css("transition", "")
+            $('#balance').css("background-color", "pink")
+            setTimeout(() => {
+                $('#balance').css("background-color", "transparent")
+                $('#balance').css("transition", "background-color " + time + "ms linear")
+            }, 100)
+        }
+        async function refreshBalance() {
+            $('#balance').html("<img src='https://www.moveonlibra.com/images/loading.gif' alt='waiting...'>")
+            ret = await client.addressAPI.getAccountBalance(account);
+            $('#balance').html(ret.balance / Million)
+            balanceAnimation(800)
+        }
+        function openModal(name) {
+            if (typeof wallet === "undefined") {
+                $('#createWalletModal').modal()
+            } else {
+                $(name).modal('show');
+            }
+        }
+        function show_wait_tx() {
+            $("#message_area").html($("#wait_tx").html())
+        }
+        function show_alert(message, clazz = "warning") {
+            $("#alert_span").html(message)
+            $("#alert_span").attr("class", "alert alert-" + clazz)
+            $("#message_area").html($("#alert_div").html())
+        }
+        function hidden_alert() {
+            $("#message_area").html("&nbsp;")
+        }
+        async function exec_api(tx_func, is_tx = true) {
+            show_wait_tx()
+            try {
+                tx = await tx_func();
+                if (is_tx) {
+                    if (tx.success) {
+                        $('#balance').html(getBalance() + get_tx_balance(tx))
+                    } else {
+                        alert("Transaction Error:" + tx.transaction_info.major_status)
+                    }
+                }
+                show_alert("Execution Successful.")
+                setTimeout(hidden_alert, 2000)
+                balanceAnimation()
+            } catch (error) {
+                console.log(error);
+                show_alert("Execution Failed!", "danger")
+                setTimeout(hidden_alert, 3000)
+            }
+        }
+        async function clickBuy() {
+            var buy_amount = parseInt($("#buy_amount").val())
+            $('#buyModal').modal('hide');
+            await exec_api(async () => {
+                console.log("buy_amount:" + buy_amount);
+                return await client.transactionAPI.mint(account.address, buy_amount * Million);
+            });
+        }
+        async function clickTransfer(receiver, micro_libra) {
+            var transfer_amount = parseInt($("#transfer_amount").val())
+            $('#transferModal').modal('hide');
+            await exec_api(async () => {
+                return await client.transactionAPI.p2pTransfer(wallet, account.address,
+                    $("#receiver_address").val(), transfer_amount * Million);
+            });
+        }
+        async function init_wallet_and_account() {
+            if (!localStorage.getItem('wallet')) {
+                $('#createWalletModal').modal()
+            } else {
+                wallet = JSON.parse(localStorage.getItem('wallet'))
+                account = JSON.parse(localStorage.getItem('account'))
+                show_wallet()
+                refreshBalance()
+            }
+        }
+        async function clickCreateWallet() {
+            $('#createWalletModal').modal('hide');
+            var name = $("#wallet_name").val()
+            $('#wallet_name_tag').html(name)
+            await exec_api(async () => {
+                wallet = await client.walletAPI.createWallet(name)
+                localStorage.setItem('wallet', JSON.stringify(wallet))
+                account = await client.walletAPI.createWalletAccount(wallet)
+                localStorage.setItem('account', JSON.stringify(account))
+            }, false);
+            show_wallet()
+            $('#balance').html(0)
+        }
+        function show_wallet() {
+            $('#wallet_name_tag').html(wallet.name)
+            $('#address_tag').html(account.address.slice(0, 12) + "..." + account.address.slice(52, 64))
+            $('#address_hidden').html(account.address)
+            var qrcode = new QRCode("qrcode", {
+                text: account.address, width: 180, height: 180,
+            });
+            var url = $('#explorer').attr("href") + "accounts/" + account.address
+            $('#explorer').attr("href", url);
+        }
+        $('#createWalletModal').on('shown.bs.modal', function () {
+            $('#wallet_name').trigger('focus')
+        })
+        $('#transferModal').on('shown.bs.modal', function () {
+            $('#receiver_address').trigger('focus')
+        })
+        $('#buyModal').on('shown.bs.modal', function () {
+            $('#buy_amount').trigger('focus')
+        })
+        async function exportWallet() {
+            if (typeof wallet === "undefined") {
+                $('#createWalletModal').modal()
+                return;
+            }
+            await exec_api(async () => {
+                content = await client.walletAPI.backupWallet(wallet)
+            }, false);
+            var link = document.createElement('a')
+            mimeType = 'text/plain'
+            link.setAttribute('download', wallet.name + ".mnemonic")
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(content))
+            link.click()
+            //window.open(host+"/v1/wallets/backup/"+wallet.wallet_id+"?appkey="+appkey)
+        }
+        $(document).ready(function () {
+            init_wallet_and_account();
+            var clipboard = new ClipboardJS('#clip_button', {
+                text: function (trigger) {
+                    return $("#address_hidden").html();
+                }
+            });
+            function hidden_clip_hint() {
+                $('#clip_button').tooltip('dispose');
+                $('#clip_button').attr('title', "Copy Address");
+            }
+            clipboard.on('success', function (e) {
+                console.info('Action:', e.action);
+                console.info('Text:', e.text);
+                $('#clip_button').attr('title', "Copied!");
+                $('#clip_button').tooltip('show');
+                e.clearSelection();
+                setTimeout(hidden_clip_hint, 1000);
+            });
+            $('#scanModal').on('hidden.bs.modal', function (e) {
+                try {
+                    scan_vue.$children[0].camera = 'off'
+                } catch (e) { }
+            })
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <link href="https://unpkg.com/vue-qrcode-reader@2.1.1/dist/vue-qrcode-reader.css" rel="stylesheet">
+    <script src="https://unpkg.com/vue-qrcode-reader@2.1.1/dist/vue-qrcode-reader.browser.js"></script>
+    <script>
+        var scan_vue;
+        function startScan() {
+            if (typeof wallet === "undefined") {
+                $('#createWalletModal').modal()
+                return;
+            }
+            $('#scanModal').modal('show')
+            if (typeof scan_vue !== "undefined") {
+                scan_vue.$children[0].camera = 'auto'
+                return
+            }
+            scan_vue = new Vue({
+                el: '#scanQrcode',
+                methods: {
+                    onDecode(decodedString) {
+                        $('#scanModal').modal('hide')
+                        if (decodedString.length == 64) {
+                            $("#receiver_address").val(decodedString)
+                            $('#transferModal').modal()
+                        } else {
+                            alert("Not a valid address: " + decodedString);
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
