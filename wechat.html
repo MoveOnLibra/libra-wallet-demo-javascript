@@ -280,19 +280,19 @@
         function getBalance() {
             return parseFloat($('#balance').html());
         }
-        function balanceAnimation(){
+        function balanceAnimation(time=1500){
             $('#balance').css("transition", "")
             $('#balance').css("background-color", "pink")
             setTimeout(()=>{
                 $('#balance').css("background-color", "transparent")
-                $('#balance').css("transition", "background-color 1500ms linear")
+                $('#balance').css("transition", "background-color "+time+"ms linear")
             }, 100)
         }
         async function refreshBalance() {
             $('#balance').html("<img src='https://www.moveonlibra.com/images/loading.gif' alt='waiting...'>")
             ret = await client.addressAPI.getAccountBalance(account);
             $('#balance').html(ret.balance / Million)
-            balanceAnimation()
+            balanceAnimation(800)
         }
         function openModal(name) {
             if (typeof wallet === "undefined") {
