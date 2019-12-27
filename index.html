@@ -43,7 +43,7 @@
                             fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f4cb.png">📋
                         </g-emoji>
                     </button>
-                    <h6><small>ACCOUNT ADDRESS: <span class="text-muted text-break text-truncate"
+                    <h6><small>ADDRESS: <span class="text-muted text-break text-truncate"
                                 id="address_tag"></span></small>
                     </h6>
                     <span id="address_hidden" style="display:none"></span>
@@ -294,7 +294,7 @@
         }
         function show_wallet() {
             $('#wallet_name_tag').html(wallet.name)
-            $('#address_tag').html(account.address.slice(0, 12) + "..." + account.address.slice(52, 64))
+            $('#address_tag').html(account.address.slice(0, 8) + "..." + account.address.slice(56, 64))
             $('#address_hidden').html(account.address)
             var qrcode = new QRCode("qrcode", {
                 text: account.address, width: 180, height: 180,

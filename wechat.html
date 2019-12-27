@@ -381,7 +381,7 @@
         }
         function show_wallet() {
             $('#wallet_name_tag').html(wallet.name)
-            $('#address_tag').html(account.address.slice(0, 12) + "..." + account.address.slice(52, 64))
+            $('#address_tag').html(account.address.slice(0, 8) + "..." + account.address.slice(56, 64))
             $('#address_hidden').html(account.address)
             var qrcode = new QRCode("qrcode", {
                 text: account.address, width: 180, height: 180,
