@@ -191,7 +191,8 @@
         const client = new LibraClient("testnet", appkey);
         const Million = 1000000;
         function get_tx_balance(tx) {
-            var amount = tx.raw_txn.payload.Script.args[1].U64 / Million;
+            var amount = tx.raw_txn.payload.Script.args[2].U64 / Million;
+            //0 is address, 1 is auth_key_prefix, 2 is amount in args
             if (tx.raw_txn.sender === account.address) {
                 return -amount
             } else {
@@ -266,7 +267,7 @@
             var transfer_amount = parseInt($("#transfer_amount").val())
             $('#transferModal').modal('hide');
             await exec_api(async () => {
-                return await client.transactionAPI.p2pTransfer(wallet, account.address,
+                return await client.transactionAPI.p2pTransfer(wallet.wallet_id, account.address,
                     $("#receiver_address").val(), transfer_amount * Million);
             });
         }
