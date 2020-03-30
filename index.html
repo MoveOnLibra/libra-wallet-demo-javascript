@@ -258,7 +258,8 @@
             $('#buyModal').modal('hide');
             await exec_api(async () => {
                 console.log("buy_amount:" + buy_amount);
-                return await client.transactionAPI.mint(account.address, buy_amount * Million);
+                auth_key_prefix = account.address //only pass param check, not really used.
+                return await client.transactionAPI.mint(account.address, auth_key_prefix, buy_amount * Million);
             });
         }
         async function clickTransfer(receiver, micro_libra) {
