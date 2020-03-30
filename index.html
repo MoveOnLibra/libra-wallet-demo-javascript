@@ -286,7 +286,7 @@
             await exec_api(async () => {
                 wallet = await client.walletAPI.createWallet(name)
                 localStorage.setItem('wallet2', JSON.stringify(wallet))
-                account = await client.walletAPI.createWalletAccount(wallet)
+                account = await client.walletAPI.createWalletAccount(wallet.wallet_id)
                 localStorage.setItem('account2', JSON.stringify(account))
             }, false);
             show_wallet()
