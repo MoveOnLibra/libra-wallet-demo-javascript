@@ -153,7 +153,7 @@
                     </div>
                     <div class="modal-body">
                         <textarea id="receiver_address" type="text" class="form-control" autofocus="true"
-                            placeholder="Receiver Address in hex64 format"></textarea>
+                            placeholder="Receiver Address in hex format"></textarea>
                         <input id="transfer_amount" type="number" class="form-control" placeholder="Number of coin">
                     </div>
                     <div class="modal-footer">
@@ -294,7 +294,7 @@
         }
         function show_wallet() {
             $('#wallet_name_tag').html(wallet.name)
-            $('#address_tag').html(account.address.slice(0, 8) + "..." + account.address.slice(56, 64))
+            $('#address_tag').html(account.address.slice(0, 8) + "..." + account.address.slice(28, 32))
             $('#address_hidden').html(account.address)
             var qrcode = new QRCode("qrcode", {
                 text: account.address, width: 180, height: 180,
@@ -372,7 +372,7 @@
                 methods: {
                     onDecode(decodedString) {
                         $('#scanModal').modal('hide')
-                        if (decodedString.length == 64) {
+                        if (decodedString.length == 32) {
                             $("#receiver_address").val(decodedString)
                             $('#transferModal').modal()
                         } else {
