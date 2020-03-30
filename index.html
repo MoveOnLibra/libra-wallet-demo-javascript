@@ -270,11 +270,11 @@
             });
         }
         async function init_wallet_and_account() {
-            if (!localStorage.getItem('wallet')) {
+            if (!localStorage.getItem('wallet2')) {
                 $('#createWalletModal').modal()
             } else {
-                wallet = JSON.parse(localStorage.getItem('wallet'))
-                account = JSON.parse(localStorage.getItem('account'))
+                wallet = JSON.parse(localStorage.getItem('wallet2'))
+                account = JSON.parse(localStorage.getItem('account2'))
                 show_wallet()
                 refreshBalance()
             }
@@ -285,9 +285,9 @@
             $('#wallet_name_tag').html(name)
             await exec_api(async () => {
                 wallet = await client.walletAPI.createWallet(name)
-                localStorage.setItem('wallet', JSON.stringify(wallet))
+                localStorage.setItem('wallet2', JSON.stringify(wallet))
                 account = await client.walletAPI.createWalletAccount(wallet)
-                localStorage.setItem('account', JSON.stringify(account))
+                localStorage.setItem('account2', JSON.stringify(account))
             }, false);
             show_wallet()
             $('#balance').html(0)
